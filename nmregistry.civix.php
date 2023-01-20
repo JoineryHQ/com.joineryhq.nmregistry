@@ -304,5 +304,11 @@ function _nmregistry_civix_fixNavigationMenuItems(&$nodes, &$maxNavID, $parentID
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
 function _nmregistry_civix_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes = array_merge($entityTypes, []);
+  $entityTypes = array_merge($entityTypes, [
+    'CRM_Nmregistry_DAO_NmregistryReminder' => [
+      'name' => 'NmregistryReminder',
+      'class' => 'CRM_Nmregistry_DAO_NmregistryReminder',
+      'table' => 'civicrm_nmregistry_reminder',
+    ],
+  ]);
 }

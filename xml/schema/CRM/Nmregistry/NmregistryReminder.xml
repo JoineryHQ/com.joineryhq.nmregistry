@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Nmregistry</base>
+  <class>NmregistryReminder</class>
+  <name>civicrm_nmregistry_reminder</name>
+  <comment>Automoted reminders for nmregistry</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique NmregistryReminder ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+
+  <field>
+    <name>name</name>
+    <type>varchar</type>
+    <length>255</length>
+    <required>true</required>
+    <comment>Human name to identify this reminder in administrative interface.</comment>
+  </field>
+
+  <field>
+    <name>days_after</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>How many days after last-profile-update should this reminder run?</comment>
+  </field>
+
+  <field>
+    <name>msg_template_id</name>
+    <type>int unsigned</type>
+    <comment>FK to msg_template</comment>
+  </field>
+  <foreignKey>
+    <name>msg_template_id</name>
+    <table>civicrm_msg_template</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>is_final</name>
+    <type>boolean</type>
+    <required>true</required>
+    <default>0</default>
+    <comment>Set registry profile status to 'archived' when this reminder runs?</comment>
+    <add>4.6</add>
+  </field>
+
+</table>

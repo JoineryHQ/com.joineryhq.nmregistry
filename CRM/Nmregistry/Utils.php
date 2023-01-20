@@ -28,6 +28,7 @@ class CRM_Nmregistry_Utils {
     if (!$isIndividualCount) {
       $statusChecks['INDIVIDUAL_CONTACT'] = [
         'status' => 'error',
+        'code' => 'CONTACT_NOT_FOUND',
         'message_thirdPerson' => E::ts('This contact does not exist or is not an Individual contact.'),
         'message_secondPerson' => E::ts('Something is wrong with your profile record; please contact us about it. The error message is: "INDIVIDUAL_CONTACT_CHECK_FAILED".'),
       ];
@@ -39,6 +40,7 @@ class CRM_Nmregistry_Utils {
     if (!$uid) {
       $statusChecks['USER_ACCOUNT'] = [
         'status' => 'error',
+        'code' => 'USER_NOT_FOUND',
         'message_thirdPerson' => E::ts('This contact does not have a WordPress user account.'),
         'message_secondPerson' => E::ts('Something is wrong with your profile record; please contact us about it. The error message is: "USER_ACCOUNT_CHECK_FAILED".'),
       ];
@@ -53,6 +55,7 @@ class CRM_Nmregistry_Utils {
     if (!$groupCount) {
       $statusChecks['SIGNED_UP_FOR_LISTING'] = [
         'status' => 'info',
+        'code' => 'NOT_SIGNED_UP',
         'message_thirdPerson' => E::ts('This contact has not yet signed up for a profile listing.'),
         'message_secondPerson' => E::ts('You haven\'t yet signed up for a profile listing.'),
       ];
@@ -81,6 +84,7 @@ class CRM_Nmregistry_Utils {
         case 'pending':
           $statusChecks['STATUS_APPROVED'] = [
             'status' => 'info',
+            'code' => 'PENDING',
             'message_thirdPerson' => E::ts('This listing is still pending review.'),
             'message_secondPerson' => E::ts('Your listing is still pending review.'),
           ];
@@ -89,8 +93,18 @@ class CRM_Nmregistry_Utils {
         case 'suspended':
           $statusChecks['STATUS_APPROVED'] = [
             'status' => 'error',
+            'code' => 'SUSPENDED',
             'message_thirdPerson' => E::ts('This listing has been suspended.'),
             'message_secondPerson' => E::ts('Your listing has been suspended. Please contact us to address this.'),
+          ];
+          break;
+
+        case 'archived':
+          $statusChecks['STATUS_APPROVED'] = [
+            'status' => 'warning',
+            'code' => 'ARCHIVED',
+            'message_thirdPerson' => E::ts('This listing has been archived due to inactivity.'),
+            'message_secondPerson' => E::ts('Your listing has been archived due to inactivity.'),
           ];
           break;
       }

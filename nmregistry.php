@@ -53,6 +53,20 @@ function nmregistry_civicrm_post(string $op, string $objectName, int $objectId, 
 }
 
 /**
+ * Implements hook_civicrm_pageRun().
+ */
+function nmregistry_civicrm_pageRun($page) {
+  $pageName = $page->getVar('_name');
+  if ($pageName == 'CRM_Profile_Page_Listings') {
+    $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
+    $gid = $page->getVar('_gid');
+    if ($gid = $individualListingProfileId) {
+      CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Listings-registrySearch.js');
+    }
+  }
+}
+
+/**
  * Implements hook_civicrm_buildForm().
  */
 function nmregistry_civicrm_buildForm($formName, &$form) {

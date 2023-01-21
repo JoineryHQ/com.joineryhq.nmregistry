@@ -1,0 +1,81 @@
+<div class="crm-container">
+  <div crm-ui-debug="nmReminders"></div>
+  <div crm-ui-debug="msgTemplates"></div>
+
+
+
+<h1 crm-page-title>{{ ts('Registry Reminders') }}</h1>
+  <div class="crm-container">
+  <div id="nmregistry-reminders-list" ng-show="screen=='reminders'" >
+    <h2>{{ ts('Reminders: list') }}</h2>
+    <p class="help">
+      {{ ts('Registry reminders can be created to notify providers that their listing is soon to be archived. Reminders are invoked daily, and will send an email with the specified Message Template if the current date is less than a given number of days before the provider\'s "Last updated listing" date.') }}
+    </p>
+    <p class="status" ng-show="nmReminders.length == 0">
+      {{ ts('There are no configured reminders.') }}
+    </p>
+    <table class="nmregistry-reminders-list" ng-show="nmReminders.length > 0">
+      <thead>
+        <tr>
+          <th>{{ ts('Name') }}</th>
+          <th>{{ ts('Days after') }}</th>
+          <th>{{ ts('Message Template') }}</th>
+          <th>{{ ts('Is Final') }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="row in nmReminders" >
+          <td>{{ row.name }}</td>
+          <td>{{ row.days_after }} </td>
+          <td>{{ msgTemplates[row.msg_template_id].msg_title }}</td>
+          <td>{{ row.is_final == 1 ? 'Yes':'No' }}</td>
+          <td>
+            <a href ng-click="$ctrl.editReminder(row)" >{{ ts('Edit') }}</a>
+            |
+            <a href ng-click="$ctrl.deleteReminder(row)" >{{ ts('Delete') }}</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <a href class='button' ng-click="$ctrl.editReminder()" >{{ ts('Add Reminder') }}</a>
+  </div>
+
+  <div id="nmregistry-reminder-edit" ng-show="screen=='reminder-edit'" >
+    <h2 >{{ ts('Reminder:') }} 
+      <small ng-show="nmReminder.id">[id={{nmReminder.id}}]</small>
+      <small ng-show="!nmReminder.id">Add New</small>
+    </h2>
+    <form crm-ui-id-scope name="editReminderForm">
+      <div crm-ui-field="{name: 'nmReminder.name', title: ts('Reminder name')}">
+        <input class="crm-form-text" crm-ui-id="nmReminder.name" name="name" ng-model="nmReminder.name" required/> 
+        <div class="description">{{ ts('Short name for your own reference; never shown to providers.') }}</div>
+      </div>
+      <div crm-ui-field="{name: 'nmReminder.days_after', title: ts('Days before \'Last Profile Update\' to invoke this reminder')}"> 
+        <input type="number" string-to-number class="crm-form-text" crm-ui-id="nmReminder.days_after" days_after="days_after" required ng-model="nmReminder.days_after"/> 
+      </div>
+      <div crm-ui-field="{required: true, name: 'nmReminder.msg_template_id', title: ts('Message Template')}">
+        <select crm-ui-select="{width:'100%', allowClear:false}" ng-model="nmReminder.msg_template_id" >
+          <option ng-repeat="option in msgTemplates" value="{{option.id}}">
+            {{option.msg_title}}
+          </option>
+        </select>
+        <div class="description" ng-bind-html="ts('This template will be used for the content of this reminder email. <a href=\'%1\'>Create or edit the User-driven Messages in Message Templates here.</a>', {1: messgeTemplateUrl})"></div>         
+      </div>
+      <div crm-ui-field="{name: 'nmReminder.is_final', title: ts('Final: Archive listing when this reminder is sent?')}">
+        <select crm-ui-select="{width:'3em', allowClear:false}" ng-model="nmReminder.is_final" >
+          <option value="1">{{ ts('Yes') }}</option>
+          <option value="0">{{ ts('No') }}</option>
+        </select>
+        <div class="description">{{ ts('If "Yes", the provider listing will be archived when this reminder is sent.') }}</div>
+      </div>
+
+      <button type="submit" class="crm-form-submit" ng-click="$ctrl.saveReminderEdits(nmReminder, editReminderForm)">{{ ts('Save') }}</button>
+      <button type="submit" class="crm-form-submit cancel" ng-click="screen='reminders'">{{ ts('Cancel') }}</button>
+      
+    </form>
+
+  </div>
+
+</div>
+  

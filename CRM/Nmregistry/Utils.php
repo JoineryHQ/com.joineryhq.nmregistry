@@ -131,27 +131,9 @@ class CRM_Nmregistry_Utils {
     if (empty($statusChecks)) {
       // If we haven't logged any issues, add one 'success' status indicating that
       // the profile is passing all checks.
-
-      /* We'll need to assemle a url to view "my" listing. Note that
-       * CRM_Utils_System::url() doesn't work for us because it forces the baseurl
-       * of the current page, which is different from the baseurl of a profile listing.
-       */
       $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
       $providerSearchPageUrl = '/provider-search'; // TODO: GET THIS FROM A SETTING.
-      $queryParams = [
-        'civiwp' => 'CiviCRM',
-        'q' => 'civicrm/profile/view',
-        'reset' => 1,
-        'gid' => 16,
-        'id' => $cid,
-      ];
-      $viewUrl = $providerSearchPageUrl;
-      if (strpos($viewUrl, '?') !== FALSE) {
-        $viewUrl .= '&' . http_build_query($queryParams);
-      }
-      else {
-        $viewUrl .= '?' . http_build_query($queryParams);
-      }
+      $viewUrl = self::buildPrividerViewListingUrl($cid, $providerSearchPageUrl, $individualListingProfileId);
       $statusChecks['ALL_CHECKS_PASSING'] = [
         'status' => 'success',
         'message_thirdPerson' => E::ts('This listing passees all requirements for listing.'),
@@ -181,6 +163,35 @@ class CRM_Nmregistry_Utils {
       }
     }
     return $statusChecks;
+  }
+
+  /**
+   * Build a URL to view a contact in a profile.
+   *
+   * @param Int $cid
+   * @param String $baseUrl e.g. /civicrm or /provider-search
+   * @param Int $profileId
+   * @return string
+   */
+  public static function buildPrividerViewListingUrl($cid, $baseUrl, $profileId) {
+    /* We'll need to assemle a url to view "my" listing. Note that
+     * CRM_Utils_System::url() doesn't work for us because it forces the baseurl
+     * of the current page, which is different from the baseurl of a profile listing.
+     */
+    $queryParams = [
+      'civiwp' => 'CiviCRM',
+      'q' => 'civicrm/profile/view',
+      'reset' => 1,
+      'gid' => $profileId,
+      'id' => $cid,
+    ];
+    if (strpos($baseUrl, '?') !== FALSE) {
+      $baseUrl .= '&' . http_build_query($queryParams);
+    }
+    else {
+      $baseUrl .= '?' . http_build_query($queryParams);
+    }
+    return $baseUrl;
   }
 
 }

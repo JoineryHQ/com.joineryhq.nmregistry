@@ -9,8 +9,8 @@ use CRM_Nmregistry_ExtensionUtil as E;
  * Implements hook_civicrm_post().
  */
 function nmregistry_civicrm_post(string $op, string $objectName, int $objectId, &$objectRef) {
-  if ($objectName == 'Activity') {
-    // Upon updating an activity of the "update registry status" type, we'll make
+  if ($objectName == 'Activity' && $op == 'create') {
+    // Upon creating an activity of the "update registry status" type, we'll make
     // corresponding changes to fields in the "registry status" custom field
     // group for the target contact.
     $statusUpdateActivityTypeId = 58; // TODO: GET THIS FROM A SETTING.
@@ -50,6 +50,26 @@ function nmregistry_civicrm_post(string $op, string $objectName, int $objectId, 
       $contactCreate = _nmregistry_civicrmapi('Contact', 'create', $contactCreateParams);
     }
   }
+  elseif ($objectName == 'GroupContact' && $op == 'create') {
+    // It's undocumented (see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_post/), but
+    // groupContact entity seems to behave similar to what's described in the docs for
+    // EntityTag: $objectId is the groupId, and $objectRef is an array of contactIds.
+    $groupId = $objectId;
+    $providersAllGroupId = 3; // TODO: GET THIS FROM A SETTING.
+    if ($groupId == $providersAllGroupId) {
+      $unapprovedListingProfileId = 19; // TODO: GET THIS FROM A SETTING.
+      $profileLinkCustomFieldId = 24; // TODO: GET THIS FROM A SETTING.
+      foreach ($objectRef as $cid) {
+        $viewProfileUrl = CRM_Nmregistry_Utils::buildPrividerViewListingUrl($cid, '/civicrm', $unapprovedListingProfileId);
+        $contactCreate = _nmregistry_civicrmapi('contact', 'create', [
+          'id' => $cid,
+          'custom_' . $profileLinkCustomFieldId => $viewProfileUrl,
+        ]);
+        $a = 1;
+      }
+    }
+  }
+
 }
 
 /**
@@ -62,6 +82,27 @@ function nmregistry_civicrm_pageRun($page) {
     $gid = $page->getVar('_gid');
     if ($gid = $individualListingProfileId) {
       CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Listings-registrySearch.js');
+    }
+  }
+  if ($pageName == 'CRM_Profile_Page_View') {
+    $unapprovedListingProfileId = 19; // TODO: GET THIS FROM A SETTING.
+    $gid = $page->getVar('_gid');
+    if ($gid = $unapprovedListingProfileId) {
+      // Bounce user if they don't have 'administer civicrm'
+      if (!CRM_Core_Permission::check('administer CiviCrm')) {
+        CRM_Utils_System::permissionDenied(E::ts('You do not have permission to view the requested page. You have been redirected.'));
+      }
+      // Alert user if this contact is not yet listed.
+      $provdersListedGroupId = 2; // TODO: GET THIS FROM A SETTING.
+      $cid = CRM_Utils_Request::retrieveValue('id', 'Int');
+      $contactGetParams = [
+        'id' => $cid,
+        'group' => $provdersListedGroupId,
+      ];
+      $contactGetCount = _nmregistry_civicrmapi('Contact', 'getCount', $contactGetParams);
+      if (!$contactGetCount) {
+        CRM_Core_Session::setStatus('Contact is not currently listed in the registry. This information is for your review.');
+      }
     }
   }
 }
@@ -149,7 +190,11 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
   if ($formName == 'CRM_Profile_Page_Dynamic') {
     $profileId = $form->getVar('_gid');
     $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
-    if ($profileId == $individualListingProfileId) {
+    $unapprovedListingProfileId = 19; // TODO: GET THIS FROM A SETTING.
+    if (
+      $profileId == $individualListingProfileId
+      || $profileId == $unapprovedListingProfileId
+    ) {
       // Special handling, if this is a profile to view an individual provider.
       // Get dispplay name and set title
       $cid = $form->getVar('_id');

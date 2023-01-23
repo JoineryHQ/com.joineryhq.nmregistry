@@ -251,7 +251,7 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
         $statusChecks['HIDE_MY_LISTING']['message_secondPerson'] .= ' ' . E::ts('You may change this preference below if you wish.');
       }
       if (!empty($statusChecks['HAS_IMAGE'])) {
-        $statusChecks['HAS_IMAGE']['message_secondPerson'] .= ' ' . E::ts('Please specify an image below.');
+        $statusChecks['HAS_IMAGE']['message_secondPerson'] .= ' ' . E::ts('Please upload an image below.');
       }
       if (($statusChecks['STATUS_APPROVED']['code'] ?? NULL) == 'ARCHIVED') {
         $statusChecks['STATUS_APPROVED']['message_secondPerson'] .= ' ' . E::ts('To remedy this, please review your details and save this form.');

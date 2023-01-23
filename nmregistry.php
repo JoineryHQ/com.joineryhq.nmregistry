@@ -174,6 +174,8 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
       // Special handling, if this is the profile to edit my provider listing.
       $tplName = 'CRM/Nmregistry/Profile/Form/DynamicRegistryProfileEdit.tpl';
 
+      CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Nmregistry_Profile_Form_DynamicRegistryProfileEdit.js');
+
       $cid = $form->getVar('_id');
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
       $avatarSize = 240; // TODO: GET THIS SIZE FROM A SETTING.

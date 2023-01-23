@@ -8,9 +8,7 @@
   <div class="crm-container">
   <div id="nmregistry-reminders-list" ng-show="screen=='reminders'" >
     <h2>{{ ts('Reminders: list') }}</h2>
-    <p class="help">
-      {{ ts('Registry reminders can be created to notify providers that their listing is soon to be archived. Reminders are invoked daily, and will send an email with the specified Message Template if the current date is less than a given number of days before the provider\'s "Last updated listing" date.') }}
-    </p>
+    <p class="help" ng-bind-html="ts('Registry reminders can be created to notify providers that their listing is soon to be archived. Reminders are invoked daily, and will send an email with the specified <a href=\%1\'>Message Template</a> if the current date is more than a given number of days after the provider\'s &quot;Last updated listing&quot; date.', {1: messageTemplateUrl})"></p>
     <p class="status" ng-show="nmReminders.length == 0">
       {{ ts('There are no configured reminders.') }}
     </p>
@@ -61,7 +59,7 @@
             {{option.msg_title}}
           </option>
         </select>
-        <div class="description" ng-bind-html="ts('Use this template for the content of this reminder email. <a href=\'%1\'>Create or edit the User-driven Messages in Message Templates here.</a>', {1: messgeTemplateUrl})"></div>
+        <div class="description" ng-bind-html="ts('Use this template for the content of this reminder email. <a href=\'%1\'>Create or edit the User-driven Messages in Message Templates here.</a>', {1: messageTemplateUrl})"></div>
       </div>
       <div crm-ui-field="{name: 'nmReminder.is_final', title: ts('Final reminder?')}">
         <select crm-ui-select="{width:'3em', allowClear:false}" ng-model="nmReminder.is_final" >

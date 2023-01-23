@@ -8,8 +8,8 @@ use CRM_Nmregistry_ExtensionUtil as E;
 /**
  * Implements hook_civicrm_post().
  */
-function nmregistry_civicrm_post(string $op, string $objectName, int $objectId, &$objectRef) {
-  if ($objectName == 'Activity' && $op == 'create') {
+function nmregistry_civicrm_post(string $op, string $objectName, $objectId = NULL, &$objectRef) {
+  if ($objectName == 'Activity' && $op == 'create' && $objectId) {
     // Upon creating an activity of the "update registry status" type, we'll make
     // corresponding changes to fields in the "registry status" custom field
     // group for the target contact.
@@ -50,7 +50,7 @@ function nmregistry_civicrm_post(string $op, string $objectName, int $objectId, 
       $contactCreate = _nmregistry_civicrmapi('Contact', 'create', $contactCreateParams);
     }
   }
-  elseif ($objectName == 'GroupContact' && $op == 'create') {
+  elseif ($objectName == 'GroupContact' && $op == 'create' && $objectId) {
     // It's undocumented (see https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_post/), but
     // groupContact entity seems to behave similar to what's described in the docs for
     // EntityTag: $objectId is the groupId, and $objectRef is an array of contactIds.
@@ -134,6 +134,13 @@ function nmregistry_civicrm_buildForm($formName, &$form) {
         CRM_Core_Error::statusBounce('This activity type cannot be edited.');
       }
     }
+  }
+  elseif ($formName == 'CRM_Profile_Form_Search') {
+    $form->setDefaults([
+      // CiviCRM doesn't set these for some reason.
+      'prox_distance_unit' => 'miles',
+      'prox_state_province_id' => Civi::settings()->get('defaultContactStateProvince'),
+    ]);
   }
 }
 

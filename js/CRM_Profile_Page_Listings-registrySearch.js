@@ -1,10 +1,18 @@
 CRM.$(function($) {
 
+  // Hide proximity Country criteria
+  $('#prox_country_id').closest('tr').hide();
+
   if ($('div.crm-search-tasks').length) {
     // On search WITH results:
     // Hide qill but don't hide mapping.
-    $('div#search-status').after($('div#search-status i.crm-i.fa-map-marker').closest('a'));
-    $('div#search-status').hide();
+    if ($('div#search-status i.crm-i.fa-map-marker').length) {
+      $('div#search-status').after($('div#search-status i.crm-i.fa-map-marker').closest('a'));
+      $('div#search-status').hide();
+    }
+    else {
+      $('div.crm-search-tasks').hide();
+    }
   }
   else if ($('div.qill').closest('div.messages.status').length) {
     // On search WITHOUT results:

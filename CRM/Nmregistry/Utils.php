@@ -59,6 +59,8 @@ class CRM_Nmregistry_Utils {
         'message_thirdPerson' => E::ts('This contact has not yet signed up for a profile listing.'),
         'message_secondPerson' => E::ts('You haven\'t yet signed up for a profile listing.'),
       ];
+      // We don't need to check anything else, just return now.
+      return $statusChecks;
     }
     // Get several custom values from this contact so we can run the following checks.
     $approvalStatusCustomFieldId = 19; // TODO: GET THIS FROM A SETTING.

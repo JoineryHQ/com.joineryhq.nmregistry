@@ -206,6 +206,22 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
 }
 
 /**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ */
+function nmregistry_civicrm_navigationMenu(&$menu) {
+  _nmregistry_civix_insert_navigation_menu($menu, 'Administer', array(
+    'label' => E::ts('Registry Reminders'),
+    'name' => 'nmregistry_reminders',
+    'url' => 'civicrm/a/#nmregistry/reminders',
+    'permission' => 'administer CiviCRM',
+  ));
+  _nmregistry_civix_navigationMenu($menu);
+}
+
+
+/**
  * Implements hook_civicrm_config().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/

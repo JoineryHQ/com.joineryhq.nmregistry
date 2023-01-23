@@ -10,7 +10,11 @@
     .then(function(result) {
       for (var i in result.values) {
         result.values[i].criteria = JSON.parse(result.values[i].criteria);
+        result.values[i].nmregistryOrder = parseInt(result.values[i].criteria.days);
       }
+      result.values = _.sortBy(result.values, function(value) {
+        return value.nmregistryOrder;
+      })
       return result;
     });
   }
@@ -88,8 +92,8 @@
       params.criteria = JSON.stringify(nmReminder.criteria);
       return crmApi('nmregistryReminder', 'create', params)
         .then(this.reloadReminders)
-        .then(function() { 
-          $scope.screen = 'reminders'; 
+        .then(function() {
+          $scope.screen = 'reminders';
           $scope.editReminderForm.$setPristine();
       });
     };
@@ -99,8 +103,8 @@
           .then(this.reloadReminders);
       }
     };
-  });
-  
+  })
+
   // stringToNumber directive, per https://code.angularjs.org/1.8.2/docs/error/ngModel/numfmt
   .directive('stringToNumber', function() {
     return {

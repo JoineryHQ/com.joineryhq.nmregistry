@@ -6,7 +6,7 @@ CRM.$(function($) {
     $('div#nmregistry-subject').html(subject);
   }
   
-  var statusCustomFieldId = 22; // TODO: GET THIS FROM A SETTING.
+  var statusCustomFieldId = CRM.vars.nmregistry.nmregistry_activityStatusCustomFieldId;
   var statusCustomFieldRow = $('input[data-api-field="custom_' + statusCustomFieldId + '"]').closest('tr.custom_field-row');
 
   // Add a class to the custom field group container so we can handle it later.

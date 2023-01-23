@@ -196,4 +196,16 @@ class CRM_Nmregistry_Utils {
     return $baseUrl;
   }
 
+  public static function getSetting($name) {
+    $ret = (Civi::settings()->get($name) ?? self::getSettingDefault($name));
+    return $ret;
+  }
+
+  public static function getSettingDefault($name) {
+    $settingDefaults = [
+      'nmregistry_activityStatusCustomFieldId' => 22,
+    ];
+    $ret = ($settingDefaults[$name] ?? NULL);
+    return $ret;
+  }
 }

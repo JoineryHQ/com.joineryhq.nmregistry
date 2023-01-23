@@ -121,6 +121,11 @@ function nmregistry_civicrm_buildForm($formName, &$form) {
         // If we're editing "registry status" custom fields on an activity,
         // add javascript to modify form behavior.
         CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Custom_Form_CustomDataByType-activityRegistryStatus.js');
+        // add vars to js
+        $jsVars = [
+          'nmregistry_activityStatusCustomFieldId' => CRM_Nmregistry_Utils::getSetting('nmregistry_activityStatusCustomFieldId'),
+        ];
+        CRM_Core_Resources::singleton()->addVars('nmregistry', $jsVars);
       }
     }
   }

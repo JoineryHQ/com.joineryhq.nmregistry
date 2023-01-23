@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Nmregistry</base>
+  <class>NmregistryReminderSent</class>
+  <name>civicrm_nmregistry_reminder_sent</name>
+  <comment>Reminders actually sent to contacts</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique NmregistryReminderSent ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Contact to whom reminder was sent</comment>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>compare_date_time</name>
+    <required>true</required>
+    <type>datetime</type>
+    <comment>Reminder was sent because this date (e.g. 'last updated profile') matched the reminder 'days' criteria.</comment>
+  </field>
+  <index>
+    <name>nmregistryremindersent_compare_date_time</name>
+    <fieldName>compare_date_time</fieldName>
+  </index>
+
+  <field>
+    <name>days</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Value of 'days' criteria for the reminder when it was sent.</comment>
+  </field>
+  <index>
+    <name>nmregistryremindersent_days</name>
+    <fieldName>days</fieldName>
+  </index>
+  
+  <field>
+    <name>sent_date_time</name>
+    <default>CURRENT_TIMESTAMP</default>
+    <type>datetime</type>
+    <comment>Date and time when reminder was sent.</comment>
+  </field>
+
+</table>

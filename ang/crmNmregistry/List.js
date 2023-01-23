@@ -14,10 +14,10 @@
       }
       result.values = _.sortBy(result.values, function(value) {
         return value.nmregistryOrder;
-      })
+      });
       return result;
     });
-  }
+  };
 
   angular.module('crmNmregistry').config(function($routeProvider) {
       $routeProvider.when('/nmregistry/reminders', {
@@ -74,9 +74,8 @@
       // Take a copy; we might not want to save it.
       $scope.nmReminder = Object.assign({
         // No defaults, but could put them here.
-        is_final: 0,
-        name: ''
-        ,
+        is_archive: 0,
+        name: '',
         criteria: {
           'days': '',
         }
@@ -88,7 +87,7 @@
         // If the form values don't pass invalidation, don't bother trying to save anything.
         return;
       }
-      var params = _.pick(nmReminder, ['id', 'name', 'msg_template_id', 'is_final']);
+      var params = _.pick(nmReminder, ['id', 'name', 'msg_template_id', 'is_archive']);
       params.criteria = JSON.stringify(nmReminder.criteria);
       return crmApi('nmregistryReminder', 'create', params)
         .then(this.reloadReminders)

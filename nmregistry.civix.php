@@ -310,5 +310,10 @@ function _nmregistry_civix_civicrm_entityTypes(&$entityTypes) {
       'class' => 'CRM_Nmregistry_DAO_NmregistryReminder',
       'table' => 'civicrm_nmregistry_reminder',
     ],
+    'CRM_Nmregistry_DAO_NmregistryReminderSent' => [
+      'name' => 'NmregistryReminderSent',
+      'class' => 'CRM_Nmregistry_DAO_NmregistryReminderSent',
+      'table' => 'civicrm_nmregistry_reminder_sent',
+    ],
   ]);
 }

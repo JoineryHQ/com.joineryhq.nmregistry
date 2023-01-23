@@ -17,6 +17,7 @@
 
 SET FOREIGN_KEY_CHECKS=0;
 
+DROP TABLE IF EXISTS `civicrm_nmregistry_reminder_sent`;
 DROP TABLE IF EXISTS `civicrm_nmregistry_reminder`;
 
 SET FOREIGN_KEY_CHECKS=1;
@@ -41,5 +42,25 @@ CREATE TABLE `civicrm_nmregistry_reminder` (
   `is_archive` tinyint NOT NULL DEFAULT 0 COMMENT 'Set registry profile status to \'archived\' when this reminder runs?',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_nmregistry_reminder_msg_template_id FOREIGN KEY (`msg_template_id`) REFERENCES `civicrm_msg_template`(`id`) ON DELETE SET NULL
+)
+ENGINE=InnoDB;
+
+-- /*******************************************************
+-- *
+-- * civicrm_nmregistry_reminder_sent
+-- *
+-- * Reminders actually sent to contacts
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_nmregistry_reminder_sent` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique NmregistryReminderSent ID',
+  `contact_id` int unsigned COMMENT 'FK to Contact to whom reminder was sent',
+  `compare_date_time` datetime NOT NULL COMMENT 'Reminder was sent because this date (e.g. \'last updated profile\') matched the reminder \'days\' criteria.',
+  `days` int unsigned NOT NULL COMMENT 'Value of \'days\' criteria for the reminder when it was sent.',
+  `sent_date_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Date and time when reminder was sent.',
+  PRIMARY KEY (`id`),
+  INDEX `nmregistryremindersent_compare_date_time`(compare_date_time),
+  INDEX `nmregistryremindersent_days`(days),
+  CONSTRAINT FK_civicrm_nmregistry_reminder_sent_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )
 ENGINE=InnoDB;

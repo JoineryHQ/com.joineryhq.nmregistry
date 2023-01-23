@@ -23,11 +23,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="row in nmReminders" >
+        <tr ng-repeat="row in nmReminders" ng-class-odd="'odd'" ng-class-even="'even'">
           <td>{{ row.name }}</td>
           <td>{{ row.criteria.days }} </td>
           <td>{{ msgTemplates[row.msg_template_id].msg_title }}</td>
-          <td>{{ row.is_final == 1 ? 'Yes':'No' }}</td>
+          <td style="font-size: 1.25em">
+            <i class="crm-i fa-check" style="color:green" ng-if="row.is_archive == 1"></i>
+            <i class="crm-i fa-minus" style="color:lightgray" ng-if="row.is_archive != 1"></i>
+          </td>
           <td>
             <a href ng-click="$ctrl.editReminder(row)" >{{ ts('Edit') }}</a>
             |
@@ -61,8 +64,8 @@
         </select>
         <div class="description" ng-bind-html="ts('Use this template for the content of this reminder email. <a href=\'%1\'>Create or edit the User-driven Messages in Message Templates here.</a>', {1: messageTemplateUrl})"></div>
       </div>
-      <div crm-ui-field="{name: 'nmReminder.is_final', title: ts('Final reminder?')}">
-        <select crm-ui-select="{width:'3em', allowClear:false}" ng-model="nmReminder.is_final" >
+      <div crm-ui-field="{name: 'nmReminder.is_archive', title: ts('Final reminder?')}">
+        <select crm-ui-select="{width:'3em', allowClear:false}" ng-model="nmReminder.is_archive" >
           <option value="1">{{ ts('Yes') }}</option>
           <option value="0">{{ ts('No') }}</option>
         </select>

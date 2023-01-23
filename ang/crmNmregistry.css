@@ -1,1 +1,12 @@
-/* Add any CSS rules for Angular module "crmNmregistry" */
+/* CSS rules for Angular module "crmNmregistry" */
+
+/* Allow select2 base <select> element to display at zero-height, so
+ * angular can focus on it and highlight validation errors.
+ */
+select[crm-ui-select] {
+  display: block !important;
+  height: 0;
+  min-height: 0;
+  border-color: transparent !important;
+  margin-bottom: -2px;
+}

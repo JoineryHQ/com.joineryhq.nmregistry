@@ -31,10 +31,10 @@
   </field>
 
   <field>
-    <name>days_after</name>
-    <type>int unsigned</type>
+    <name>criteria</name>
+    <type>text</type>
     <required>true</required>
-    <comment>How many days after last-profile-update should this reminder run?</comment>
+    <comment>JSON storage of sending criteria for this reminder</comment>
   </field>
 
   <field>
@@ -50,7 +50,7 @@
   </foreignKey>
 
   <field>
-    <name>is_final</name>
+    <name>is_archive</name>
     <type>boolean</type>
     <required>true</required>
     <default>0</default>

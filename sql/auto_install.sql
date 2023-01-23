@@ -36,9 +36,9 @@ SET FOREIGN_KEY_CHECKS=1;
 CREATE TABLE `civicrm_nmregistry_reminder` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique NmregistryReminder ID',
   `name` varchar(255) NOT NULL COMMENT 'Human name to identify this reminder in administrative interface.',
-  `days_after` int unsigned NOT NULL COMMENT 'How many days after last-profile-update should this reminder run?',
+  `criteria` text NOT NULL COMMENT 'JSON storage of sending criteria for this reminder',
   `msg_template_id` int unsigned COMMENT 'FK to msg_template',
-  `is_final` tinyint NOT NULL DEFAULT 0 COMMENT 'Set registry profile status to \'archived\' when this reminder runs?',
+  `is_archive` tinyint NOT NULL DEFAULT 0 COMMENT 'Set registry profile status to \'archived\' when this reminder runs?',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_nmregistry_reminder_msg_template_id FOREIGN KEY (`msg_template_id`) REFERENCES `civicrm_msg_template`(`id`) ON DELETE SET NULL
 )

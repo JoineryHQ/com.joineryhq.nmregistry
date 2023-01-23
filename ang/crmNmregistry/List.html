@@ -18,7 +18,7 @@
       <thead>
         <tr>
           <th>{{ ts('Name') }}</th>
-          <th>{{ ts('Days after') }}</th>
+          <th>{{ ts('Age (days)') }}</th>
           <th>{{ ts('Message Template') }}</th>
           <th>{{ ts('Is Final') }}</th>
           <th></th>
@@ -27,7 +27,7 @@
       <tbody>
         <tr ng-repeat="row in nmReminders" >
           <td>{{ row.name }}</td>
-          <td>{{ row.days_after }} </td>
+          <td>{{ row.criteria.days }} </td>
           <td>{{ msgTemplates[row.msg_template_id].msg_title }}</td>
           <td>{{ row.is_final == 1 ? 'Yes':'No' }}</td>
           <td>
@@ -42,40 +42,40 @@
   </div>
 
   <div id="nmregistry-reminder-edit" ng-show="screen=='reminder-edit'" >
-    <h2 >{{ ts('Reminder:') }} 
+    <h2 >{{ ts('Reminder:') }}
       <small ng-show="nmReminder.id">[id={{nmReminder.id}}]</small>
       <small ng-show="!nmReminder.id">Add New</small>
     </h2>
     <form crm-ui-id-scope name="editReminderForm">
       <div crm-ui-field="{name: 'nmReminder.name', title: ts('Reminder name')}">
-        <input class="crm-form-text" crm-ui-id="nmReminder.name" name="name" ng-model="nmReminder.name" required/> 
+        <input class="crm-form-text" crm-ui-id="nmReminder.name" name="name" ng-model="nmReminder.name"  ng-required="screen=='reminder-edit'"/>
         <div class="description">{{ ts('Short name for your own reference; never shown to providers.') }}</div>
       </div>
-      <div crm-ui-field="{name: 'nmReminder.days_after', title: ts('Days before \'Last Profile Update\' to invoke this reminder')}"> 
-        <input type="number" string-to-number class="crm-form-text" crm-ui-id="nmReminder.days_after" days_after="days_after" required ng-model="nmReminder.days_after"/> 
+      <div crm-ui-field="{name: 'nmReminder.criteria.days', title: ts('Age (days)')}">
+        <input type="number" ng-min="1" string-to-number class="crm-form-text" crm-ui-id="nmReminder.criteria.days" name="nmReminder.criteria.days" ng-required="screen=='reminder-edit'" ng-model="nmReminder.criteria.days"/>
+        <div class="description">{{ ts('Only send this reminder if this many days have passed since user updated their listing (per "Last updated listing" field.)') }}</div>
       </div>
       <div crm-ui-field="{required: true, name: 'nmReminder.msg_template_id', title: ts('Message Template')}">
-        <select crm-ui-select="{width:'100%', allowClear:false}" ng-model="nmReminder.msg_template_id" >
+        <select crm-ui-select="{width:'100%', allowClear:false}" ng-model="nmReminder.msg_template_id" ng-required="screen=='reminder-edit'" name="nmReminder.msg_template_id">
           <option ng-repeat="option in msgTemplates" value="{{option.id}}">
             {{option.msg_title}}
           </option>
         </select>
-        <div class="description" ng-bind-html="ts('This template will be used for the content of this reminder email. <a href=\'%1\'>Create or edit the User-driven Messages in Message Templates here.</a>', {1: messgeTemplateUrl})"></div>         
+        <div class="description" ng-bind-html="ts('Use this template for the content of this reminder email. <a href=\'%1\'>Create or edit the User-driven Messages in Message Templates here.</a>', {1: messgeTemplateUrl})"></div>
       </div>
-      <div crm-ui-field="{name: 'nmReminder.is_final', title: ts('Final: Archive listing when this reminder is sent?')}">
+      <div crm-ui-field="{name: 'nmReminder.is_final', title: ts('Final reminder?')}">
         <select crm-ui-select="{width:'3em', allowClear:false}" ng-model="nmReminder.is_final" >
           <option value="1">{{ ts('Yes') }}</option>
           <option value="0">{{ ts('No') }}</option>
         </select>
-        <div class="description">{{ ts('If "Yes", the provider listing will be archived when this reminder is sent.') }}</div>
+        <div class="description">{{ ts('Archive the listing when this reminder is sent?') }}</div>
       </div>
 
-      <button type="submit" class="crm-form-submit" ng-click="$ctrl.saveReminderEdits(nmReminder, editReminderForm)">{{ ts('Save') }}</button>
-      <button type="submit" class="crm-form-submit cancel" ng-click="screen='reminders'">{{ ts('Cancel') }}</button>
-      
+      <button type="submit" class="crm-form-submit" ng-click="$ctrl.saveReminderEdits(nmReminder)">{{ ts('Save') }}</button>
+      <button type="submit" class="crm-form-submit cancel" ng-click="screen='reminders'; editReminderForm.$setPristine();">{{ ts('Cancel') }}</button>
+
     </form>
 
   </div>
 
 </div>
-  

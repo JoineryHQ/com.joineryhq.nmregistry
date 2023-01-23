@@ -1,13 +1,19 @@
 (function(angular, $, _) {
 
-  // Store these here because I only want to write them once.
-  var nmRemindersApiParams = {
-    "options": {
-      "limit":0,
-      "sort":"days_after DESC"
-    },
-    "sequential": 1,
-  };
+  var nmRemindersLoadAll = function nmRemindersLoadAll(crmApi) {
+    return crmApi('NmregistryReminder', 'get', {
+      "options": {
+        "limit":0,
+      },
+      "sequential": 1,
+    })
+    .then(function(result) {
+      for (var i in result.values) {
+        result.values[i].criteria = JSON.parse(result.values[i].criteria);
+      }
+      return result;
+    });
+  }
 
   angular.module('crmNmregistry').config(function($routeProvider) {
       $routeProvider.when('/nmregistry/reminders', {
@@ -18,9 +24,7 @@
         // If you need to look up data when opening the page, list it out
         // under "resolve".
         resolve: {
-          nmReminders: function(crmApi) {
-            return crmApi('NmregistryReminder', 'get', nmRemindersApiParams);
-          },
+          nmReminders: nmRemindersLoadAll,
           msgTemplates: function(crmApi) {
             return crmApi('messageTemplate', 'get', {
               "workflow_name": {"IS NULL":1},
@@ -55,14 +59,11 @@
     // Local variable for this controller (needed when inside a callback fn where `this` is not available).
     var ctrl = this;
 
-//    this.nmReminders = nmReminders;
-
     // DRY. Returns a Promise.
     this.reloadReminders = function() {
-      return crmApi('nmregistryReminder', 'get', nmRemindersApiParams)
-        .then(function(result) {
-          $scope.nmReminders = result.values || [];
-        });
+      return nmRemindersLoadAll(crmApi).then(function(result) {
+        $scope.nmReminders = result.values || [];
+      });
     };
 
     this.editReminder = function(nmReminder) {
@@ -71,18 +72,26 @@
         // No defaults, but could put them here.
         is_final: 0,
         name: ''
+        ,
+        criteria: {
+          'days': '',
+        }
       }, nmReminder);
       $scope.screen = 'reminder-edit';
     };
-    this.saveReminderEdits = function(nmReminder, editReminderForm) {
-      if (!editReminderForm.$valid) {
+    this.saveReminderEdits = function(nmReminder) {
+      if (!$scope.editReminderForm.$valid) {
         // If the form values don't pass invalidation, don't bother trying to save anything.
         return;
       }
-      var params = _.pick(nmReminder, ['id', 'name', 'days_after', 'msg_template_id', 'is_final']);
+      var params = _.pick(nmReminder, ['id', 'name', 'msg_template_id', 'is_final']);
+      params.criteria = JSON.stringify(nmReminder.criteria);
       return crmApi('nmregistryReminder', 'create', params)
         .then(this.reloadReminders)
-        .then(function() { $scope.screen = 'reminders'; });
+        .then(function() { 
+          $scope.screen = 'reminders'; 
+          $scope.editReminderForm.$setPristine();
+      });
     };
     this.deleteReminder = function(nmReminder) {
       if (confirm(ts('Delete reminder "%1"? This cannot be un-done.', { 1: nmReminder.name }))) {
@@ -90,7 +99,8 @@
           .then(this.reloadReminders);
       }
     };
-  })
+  });
+  
   // stringToNumber directive, per https://code.angularjs.org/1.8.2/docs/error/ngModel/numfmt
   .directive('stringToNumber', function() {
     return {

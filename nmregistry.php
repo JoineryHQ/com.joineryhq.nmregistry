@@ -222,7 +222,6 @@ function nmregistry_civicrm_navigationMenu(&$menu) {
   _nmregistry_civix_navigationMenu($menu);
 }
 
-
 /**
  * Implements hook_civicrm_config().
  *

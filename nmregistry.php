@@ -157,10 +157,16 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
       CRM_Utils_System::setTitle($displayName);
       $tplName = 'CRM/Nmregistry/Profile/Page/DynamicRegistryProfileView.tpl';
 
-      $introText = 'TODO: GET THIS TEXT FROM A SETTING.';
+      // Have to get this setting with api, because Civi::settings()->get() is
+      // somehow running htmlspecialchars (or something like it) on the value.
+      $settings = _nmregistry_civicrmapi('Setting', 'getSingle', [
+        'sequential' => 1,
+        'return' => ["nmregistry_listing_preface"],
+      ]);;
+      $introText = $settings['nmregistry_listing_preface'];
       $form->assign('nmregistryIntroText', $introText);
 
-      $avatarSize = 240; // TODO: GET THIS SIZE FROM A SETTING.
+      $avatarSize = Civi::settings()->get('nmregistry_avatar_size');
 
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
       $avatar = CRM_Nmregistry_Utils::get_avatar($uid, $avatarSize);
@@ -178,7 +184,7 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
 
       $cid = $form->getVar('_id');
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
-      $avatarSize = 240; // TODO: GET THIS SIZE FROM A SETTING.
+      $avatarSize = Civi::settings()->get('nmregistry_avatar_size');
       $avatar = CRM_Nmregistry_Utils::get_avatar($uid, $avatarSize);
       $form->assign('nmregistryUserAvatar', $avatar);
       $form->assign('nmregistryUserAvatarSize', $avatarSize);
@@ -213,10 +219,24 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
  */
 function nmregistry_civicrm_navigationMenu(&$menu) {
-  _nmregistry_civix_insert_navigation_menu($menu, 'Administer', array(
+  _civirules_civix_insert_navigation_menu($menu, 'Administer', [
+    'label' => E::ts('NM Registry'),
+    'name' => 'nmregistry',
+    'url' => NULL,
+    'permission' => 'administer CiviCRM',
+    'operator' => NULL,
+    'separator' => NULL,
+  ]);
+  _nmregistry_civix_insert_navigation_menu($menu, 'Administer/nmregistry', array(
     'label' => E::ts('Registry Reminders'),
     'name' => 'nmregistry_reminders',
     'url' => 'civicrm/a/#nmregistry/reminders',
+    'permission' => 'administer CiviCRM',
+  ));
+  _nmregistry_civix_insert_navigation_menu($menu, 'Administer/nmregistry', array(
+    'label' => E::ts('Settings'),
+    'name' => 'nmregistry_settings',
+    'url' => 'civicrm/admin/nmregistry/settings',
     'permission' => 'administer CiviCRM',
   ));
   _nmregistry_civix_navigationMenu($menu);

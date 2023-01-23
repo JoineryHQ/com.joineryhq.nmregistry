@@ -128,8 +128,6 @@ class CRM_Nmregistry_Utils {
       ];
     }
 
-    // TODO: NOT SURE HOW TO CHECK THIS ONE YET: has updated or reviewed their listing recently equals x days (read-only custom field "Last updated listing", controlled by nmregistry extension on submit of Edit My Listing form)
-
     if (empty($statusChecks)) {
       // If we haven't logged any issues, add one 'success' status indicating that
       // the profile is passing all checks.

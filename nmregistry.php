@@ -87,10 +87,10 @@ function nmregistry_civicrm_pageRun($page) {
   if ($pageName == 'CRM_Profile_Page_View') {
     $unapprovedListingProfileId = 19; // TODO: GET THIS FROM A SETTING.
     $gid = $page->getVar('_gid');
-    if ($gid = $unapprovedListingProfileId) {
+    if ($gid == $unapprovedListingProfileId) {
       // Bounce user if they don't have 'administer civicrm'
       if (!CRM_Core_Permission::check('administer CiviCrm')) {
-        CRM_Utils_System::permissionDenied(E::ts('You do not have permission to view the requested page. You have been redirected.'));
+        CRM_Utils_System::permissionDenied();
       }
       // Alert user if this contact is not yet listed.
       $provdersListedGroupId = 2; // TODO: GET THIS FROM A SETTING.

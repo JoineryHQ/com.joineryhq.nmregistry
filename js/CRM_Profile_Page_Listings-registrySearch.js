@@ -20,6 +20,6 @@ CRM.$(function($) {
 
   // Remove "contact summary overlay" column in profile search results.
   // (These are alreayd hidden by css in the them, but let's just remove them entirely here too.)
-  $('div.crm-search-results > table > tbody > tr th:first').remove();
-  $('div.crm-search-results > table > tbody > tr td:first').remove();
+  $('div.crm-search-results > table > tbody > tr th:nth-child(1)').remove();
+  $('div.crm-search-results > table > tbody > tr td:nth-child(1)').remove();
 });

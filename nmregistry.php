@@ -223,11 +223,14 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
       $introText = $settings['nmregistry_listing_preface'];
       $form->assign('nmregistryIntroText', $introText);
 
-      $avatarSize = Civi::settings()->get('nmregistry_avatar_size');
 
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
-      $avatar = CRM_Nmregistry_Utils::get_avatar($uid, $avatarSize);
-      $form->assign('nmregistryUserAvatar', $avatar);
+      if ($uid) {
+        $avatarSize = Civi::settings()->get('nmregistry_avatar_size');
+        $avatar = CRM_Nmregistry_Utils::get_avatar($uid, $avatarSize);
+        $form->assign('nmregistryUserAvatar', $avatar);
+        $form->assign('nmregistryUserAvatarSize', $avatarSize);
+      }
     }
   }
   elseif ($formName == 'CRM_Profile_Form_Edit') {

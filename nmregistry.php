@@ -145,6 +145,7 @@ function nmregistry_civicrm_buildForm($formName, &$form) {
       // CiviCRM doesn't set these for some reason.
       'prox_distance_unit' => 'miles',
       'prox_state_province_id' => Civi::settings()->get('defaultContactStateProvince'),
+      'prox_country_id' => Civi::settings()->get('defaultContactCountry'),
     ]);
   }
 }

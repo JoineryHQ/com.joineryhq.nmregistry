@@ -224,6 +224,7 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
       $introText = $settings['nmregistry_listing_preface'];
       $form->assign('nmregistryIntroText', $introText);
 
+      $form->assign('isBackgroundCheckGood', (int)CRM_Nmregistry_Utils::isBackgroundCheckGood($cid));
 
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
       if ($uid) {

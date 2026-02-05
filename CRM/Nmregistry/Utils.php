@@ -18,6 +18,7 @@ class CRM_Nmregistry_Utils {
 
   public static function getProviderStatusChecks($cid) {
     $statusChecks = [];
+    $statusWarnings = [];
 
     // Compare all of these criteria, and return a status message for each criteria not met.
     // Is an individual contact in cvicrm (user is logged in viewing their own profile, so must be an Individual)
@@ -130,6 +131,25 @@ class CRM_Nmregistry_Utils {
       ];
     }
 
+    // has not passed a background check in the last 12 monhts.
+    if (!CRM_Nmregistry_Utils::isBackgroundCheckGood($cid)) {
+      $requirementDate = strtotime('February 15, 2026');
+      $tsParams = [
+        '1'=> date('F j, Y', $requirementDate),
+      ];
+      $check = [
+        'status' => 'warning',
+        'message_thirdPerson' => E::ts('This listing lacks a passing background check within the past 12 months, which is a requirement for all published profiles, as of %1.', $tsParams),
+        'message_secondPerson' => E::ts('Your listing lacks a passing background check within the past 12 months, which is a requirement for all published profiles, as of %1.', $tsParams),
+      ];
+      if (time() > $requirementDate) {
+        $statusChecks['BACKGROUND_CHECK'] = $check;
+      }
+      else {
+        $statusWarnings['BACKGROUND_CHECK'] = $check;
+      }
+    }
+
     if (empty($statusChecks)) {
       // If we haven't logged any issues, add one 'success' status indicating that
       // the profile is passing all checks.
@@ -138,10 +158,18 @@ class CRM_Nmregistry_Utils {
       $viewUrl = self::buildPrividerViewListingUrl($cid, $providerSearchPageUrl, $individualListingProfileId);
       $statusChecks['ALL_CHECKS_PASSING'] = [
         'status' => 'success',
-        'message_thirdPerson' => E::ts('This listing passees all requirements for listing.'),
+        'message_thirdPerson' => E::ts('This listing passees all requirements for publication.'),
         'message_secondPerson' => E::ts("Your listing meets all requirements and now appears in the directory. <a href='%1'>You can view it here.</a>", [1 => $viewUrl]),
       ];
     }
+    else {
+      $statusChecks['ALL_CHECKS_PASSING'] = [
+        'status' => 'error',
+        'message_thirdPerson' => E::ts('This listing does not pass requierments publication.'),
+        'message_secondPerson' => E::ts("Your listing lacks some requirements and does not appear in the directory.", [1 => $viewUrl]),
+      ];
+    }
+    $statusChecks += $statusWarnings;
     return $statusChecks;
   }
 
@@ -208,4 +236,13 @@ class CRM_Nmregistry_Utils {
     $ret = ($settingDefaults[$name] ?? NULL);
     return $ret;
   }
+
+  public static function isBackgroundCheckGood(int $cid) : bool {
+    $backgroundCheckDateCustomFieldId = 26; // TODO: GET THIS FROM A SETTING.
+    $backgroundCheckDate = _nmregistry_civicrmapi('Contact', 'getValue', ['id' => $cid, 'return' => 'custom_'. $backgroundCheckDateCustomFieldId]);
+    $backgroundCheckDateTime = strtotime($backgroundCheckDate);
+    $minDateTime = strtotime('1 year ago');
+    return ($backgroundCheckDateTime  > $minDateTime);
+  }
+
 }

@@ -3,13 +3,10 @@
   <div id="nmregistry-profile-view-header">
     <div id="nmregistry-user-avatar">{$nmregistryUserAvatar}</div>
     {if $isBackgroundCheckGood}
-      <div id="nmregistry-profile-background-check-badge-wrapper">
         {capture assign=badgeSrc}{crmResURL ext="nmregistry" file="img"}{/capture}
+        <a class="fancybox-iframe" title="About Background Checks" href="/respite-provider-background-checks?lightbox=1"  id="nmregistry-profile-background-check-badge-wrapper">
         <img id="nmregistry-profile-background-check-badge" src="{$badgeSrc}/bc-badge.png">
-        <span id="nmregistry-profile-background-check-badge-help">
-          <a class="fancybox-iframe" title="About Background Checks" href="/respite-provider-background-checks"><img src="{$badgeSrc}/help.png"></a>
-        </span>
-      </div>
+        <img id="nmregistry-profile-background-check-badge-help" src="{$badgeSrc}/help.png"></a>
     {/if}
   </div>
 

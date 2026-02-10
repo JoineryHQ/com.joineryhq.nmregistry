@@ -137,10 +137,11 @@ class CRM_Nmregistry_Utils {
       $tsParams = [
         '1'=> date('F j, Y', $requirementDate),
       ];
+      $backgroundCheckMessageAddendum = E::ts('Contact <a href="mailto: sharon@nmdcc.org">sharon@nmdcc.org</a> to get your background check started at no cost.');
       $check = [
         'status' => 'warning',
-        'message_thirdPerson' => E::ts('This listing lacks a passing background check within the past 12 months, which is a requirement for all published profiles, as of %1.', $tsParams),
-        'message_secondPerson' => E::ts('Your listing lacks a passing background check within the past 12 months, which is a requirement for all published profiles, as of %1.', $tsParams),
+        'message_thirdPerson' => E::ts('This listing lacks a passing background check within the past 12 months, which is a requirement for all published profiles, as of %1.', $tsParams) . " $backgroundCheckMessageAddendum",
+        'message_secondPerson' => E::ts('Your listing lacks a passing background check within the past 12 months, which is a requirement for all published profiles, as of %1.', $tsParams) . " $backgroundCheckMessageAddendum",
       ];
       if (time() > $requirementDate) {
         $statusChecks['BACKGROUND_CHECK'] = $check;

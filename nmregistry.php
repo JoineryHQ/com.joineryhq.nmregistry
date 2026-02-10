@@ -225,6 +225,7 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
       $form->assign('nmregistryIntroText', $introText);
 
       $form->assign('isBackgroundCheckGood', (int)CRM_Nmregistry_Utils::isBackgroundCheckGood($cid));
+      $form->assign('bacgroundCheckInfoUrl', '/respite-provider-background-checks'); // TODO: GET THIS FROM A SETTING.
 
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
       if ($uid) {

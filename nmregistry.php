@@ -89,6 +89,8 @@ function nmregistry_civicrm_pageRun($page) {
       CRM_Core_Resources::singleton()->addVars('nmregistry', $jsVars);
       // Add js file for this page.
       CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Listings-registrySearch.js');
+      // Add css file for this page.
+      CRM_Core_Resources::singleton()->addStyleFile(E::LONG_NAME, 'css/CRM_Profile_Page_Listings-registrySearch.css');
     }
   }
   if ($pageName == 'CRM_Profile_Page_View') {
@@ -401,7 +403,7 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
 //  $selector = new CRM_Core_Selector_Controller();
   $ufGroupName = $selector::$_template->getTemplateVars('ufGroupName');
   $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
-  $themeLightboxParam = 'lightbox'; // TODO: GET THIS FROM A SETTING.
+  $themeLightboxParams = ['lightbox', 'lightbox-nolink']; // TODO: GET THIS FROM A SETTING.
   $themePopupClass = 'fancybox-iframe'; // TODO: GET THIS FROM A SETTING.
   if (substr($ufGroupName, -3) == '_'. $individualListingProfileId) {
     // Determine which row column has the "Actions" links.
@@ -426,6 +428,8 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
     $avatarColumnOffset = 1;
     $avatarHeader = [
       'desc' => 'nrmregistryAvatar',
+      'name' => 'Photo',
+      'field_name' => 'nrmregistry-avatar',
     ];
     array_splice($headers, $avatarColumnOffset, 0, [$avatarHeader]);
 
@@ -436,7 +440,9 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
       $viewLink->addClass($themePopupClass);
       $viewUrl = $viewLink->attr('href');
       $u = \Civi::url($viewUrl, 'a');
-      $u->addQuery([$themeLightboxParam => 1]);
+      foreach ($themeLightboxParams as $themeLightboxParam) {
+        $u->addQuery([$themeLightboxParam => 1]);
+      }
       $viewLink->attr('href', (string) $u);
       $coder = new \Civi\Angular\Coder();
       $row[$actionsKey] = $coder->encode($docActions);
@@ -466,6 +472,16 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
       // Place the avatar in the row.
       array_splice($row, $avatarColumnOffset, 0, [$avatarColumnValue]);
 
+      $headerNamesExcludedFromLabels = [
+        'Name',
+        'Photo'
+      ];
+      foreach ($headers as $headerKey => $header) {
+        $headerName = ($header['name'] ?? '');
+        if (!empty($headerName) && !in_array($headerName, $headerNamesExcludedFromLabels)) {
+          $row[$headerKey] = "<label>{$headerName}: </label>" . $row[$headerKey];
+        }
+      }
     }
   }
 

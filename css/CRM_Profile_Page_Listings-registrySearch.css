@@ -1,0 +1,87 @@
+.crm-container div.crm-search-results tbody {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;  
+  margin-top: 20px;
+}
+.crm-container div.crm-search-results table {
+  border: none;
+}
+
+.crm-container div.crm-search-results tbody tr.columnheader {
+  display: none;
+}
+
+.crm-container div.crm-search-results tbody tr.even-row, 
+.crm-container div.crm-search-results tbody tr.odd-row {
+  background-color: #F3F1E9;
+  border: 1px solid #F3F1E9;
+}
+.crm-container div.crm-search-results tbody tr {
+  position: relative;
+  width: calc(33% - 20px);
+  padding: 20px;
+}
+.crm-container div.crm-search-results tbody tr:hover {
+  background-color: #FFFEFB;
+}
+
+.crm-container div.crm-search-results tbody td {
+  display: block;
+  border: none;
+  text-align: center;
+  font-size: 1.2em;
+}
+.crm-container div.crm-search-results tbody td:last-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+}
+.crm-container div.crm-search-results tbody td:last-child a {
+    height: 100%;
+    display: block;
+    color: transparent;
+    background: transparent; 
+    width: 100%;
+    padding: 0;
+    border: 1px solid transparent;
+}
+.crm-container div.crm-search-results tbody td:last-child a:hover {
+  border: none;
+}
+
+
+.crm-container div.crm-search-results tbody td.crm-nrmregistry-avatar {
+  height: 275px;
+}
+.crm-container div.crm-search-results tbody td.crm-nrmregistry-avatar img {
+  max-height: 240px;
+  width: auto;
+  /*border-radius: 20px;*/
+}
+.crm-container div.crm-search-results tbody td.crm-sort_name {
+  font-weight: bold;
+  font-size: 2em;
+  padding-bottom: .5em;
+  line-height: 1.2;
+}
+.crm-container div.crm-search-results tbody td label {
+  font-weight: 600;
+}
+
+@media (max-width: 990px) {
+  /* styles here apply at 990px and below */
+  .crm-container div.crm-search-results tbody tr {
+    width: calc(50% - 20px);
+  }
+}
+@media (max-width: 630px) {
+  /* styles here apply at 990px and below */
+  .crm-container div.crm-search-results tbody tr {
+    width: calc(100% - 20px);
+  }
+}

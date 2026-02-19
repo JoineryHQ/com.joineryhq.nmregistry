@@ -1,6 +1,10 @@
 CRM.$(function($) {
+  // Remove ajax-driven click handlers in results pager.
+  var formSelector = ('form.' + CRM.vars.nmregistry.formClass || '#crm-main-content-wrapper');
+  var $form = $(formSelector);
+  $form.off('.crm-pager');
 
-  // Hide proximity Country criteria
+  // Hide proximity Country criteria in form.
   $('#prox_country_id').closest('tr').hide();
 
   if ($('div.crm-search-tasks').length) {

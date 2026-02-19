@@ -81,6 +81,13 @@ function nmregistry_civicrm_pageRun($page) {
     $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
     $gid = $page->getVar('_gid');
     if ($gid = $individualListingProfileId) {
+      // Prep js vars and pass to js.
+      $form = $page->getTemplateVars('form');
+      $jsVars = [
+        'formClass' => $form['formClass'],
+      ];
+      CRM_Core_Resources::singleton()->addVars('nmregistry', $jsVars);
+      // Add js file for this page.
       CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Listings-registrySearch.js');
     }
   }
@@ -388,4 +395,78 @@ function _nmregistry_log_api_error(Exception $e, string $entity, string $action,
   $error_location = "{$bt[1]['file']}::{$bt[1]['line']}";
   $message .= "Error API called from: $error_location";
   CRM_Core_Error::debug_log_message($message);
+}
+
+function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$selector ) {
+//  $selector = new CRM_Core_Selector_Controller();
+  $ufGroupName = $selector::$_template->getTemplateVars('ufGroupName');
+  $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
+  $themeLightboxParam = 'lightbox'; // TODO: GET THIS FROM A SETTING.
+  $themePopupClass = 'fancybox-iframe'; // TODO: GET THIS FROM A SETTING.
+  if (substr($ufGroupName, -3) == '_'. $individualListingProfileId) {
+    // Determine which row column has the "Actions" links.
+    $actionsKey = NULL;
+    foreach (array_reverse($headers, TRUE) as $headerKey => $header) {
+      if ($header['desc'] == 'Actions') {
+        $actionsKey = $headerKey;
+        break;
+      }
+    }
+
+    // Determine which row column has "sort_name"
+    $sortNameKey = NULL;
+    foreach ($headers as $headerKey => $header) {
+      if ($header['field_name'] == 'sort_name') {
+        $sortNameKey = $headerKey;
+        break;
+      }
+    }
+
+    // Insert a column header for the avatar.
+    $avatarColumnOffset = 1;
+    $avatarHeader = [
+      'desc' => 'nrmregistryAvatar',
+    ];
+    array_splice($headers, $avatarColumnOffset, 0, [$avatarHeader]);
+
+    foreach ($rows as &$row) {
+      // Modify the View link so that it uses fancybox.
+      $docActions = \phpQuery::newDocument($row[$actionsKey], 'text/html');
+      $viewLink = $docActions->find('a[title="'. ts('View Profile Details') .'"]');
+      $viewLink->addClass($themePopupClass);
+      $viewUrl = $viewLink->attr('href');
+      $u = \Civi::url($viewUrl, 'a');
+      $u->addQuery([$themeLightboxParam => 1]);
+      $viewLink->attr('href', (string) $u);
+      $coder = new \Civi\Angular\Coder();
+      $row[$actionsKey] = $coder->encode($docActions);
+
+      // Get the provider cid
+      $docColumn0 = \phpQuery::newDocument($row[0], 'text/html');
+      $href = $docColumn0->find('a.crm-summary-link')->attr('href');
+      $query = parse_url($href, PHP_URL_QUERY);
+      parse_str($query, $params);
+      $cid = $params['cid'] ?? null;
+      
+      // Get the provider display name
+      $contact = \Civi\Api4\Contact::get(TRUE)
+        ->addSelect('display_name')
+        ->addWhere('id', '=', $cid)
+        ->setLimit(1)
+        ->execute()
+        ->first();
+      // Replace sort_name with display_name in row.
+      $row[$sortNameKey] = $contact['display_name'];
+
+      // Determine the avatar for this provider.
+      $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
+      $avatarSize = Civi::settings()->get('nmregistry_avatar_size');
+      $avatarColumnValue = CRM_Nmregistry_Utils::get_avatar($uid, $avatarSize);
+
+      // Place the avatar in the row.
+      array_splice($row, $avatarColumnOffset, 0, [$avatarColumnValue]);
+
+    }
+  }
+
 }

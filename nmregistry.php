@@ -434,33 +434,32 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
     array_splice($headers, $avatarColumnOffset, 0, [$avatarHeader]);
 
     foreach ($rows as &$row) {
-      // Modify the View link so that it uses fancybox.
+      // Analyze and maniputlate the View link ...
       $docActions = \phpQuery::newDocument($row[$actionsKey], 'text/html');
       $viewLink = $docActions->find('a[title="'. ts('View Profile Details') .'"]');
+      // ... modify the <a> element so that it uses fancybox.
       $viewLink->addClass($themePopupClass);
+      // ... get the href url
       $viewUrl = $viewLink->attr('href');
-      $u = \Civi::url($viewUrl, 'a');
+      // ... get the provider cid from the href url (we'll use this for other things below)
+      $query = parse_url($viewUrl, PHP_URL_QUERY);
+      parse_str($query, $params);
+      $cid = $params['id'] ?? null;
+      // ... add the theme 'ligthbox' parameters to the url
+      $civiUrlObject = \Civi::url($viewUrl, 'a');
       foreach ($themeLightboxParams as $themeLightboxParam) {
-        $u->addQuery([$themeLightboxParam => 1]);
+        $civiUrlObject->addQuery([$themeLightboxParam => 1]);
       }
-      $viewLink->attr('href', (string) $u);
+      $viewLink->attr('href', (string) $civiUrlObject);
       $coder = new \Civi\Angular\Coder();
       $row[$actionsKey] = $coder->encode($docActions);
 
-      // Get the provider cid
-      $docColumn0 = \phpQuery::newDocument($row[0], 'text/html');
-      $href = $docColumn0->find('a.crm-summary-link')->attr('href');
-      $query = parse_url($href, PHP_URL_QUERY);
-      parse_str($query, $params);
-      $cid = $params['cid'] ?? null;
-      
       // Get the provider display name
-      $contact = \Civi\Api4\Contact::get(TRUE)
-        ->addSelect('display_name')
-        ->addWhere('id', '=', $cid)
-        ->setLimit(1)
-        ->execute()
-        ->first();
+      $contact = _nmregistry_civicrmapi('contact', 'getSingle', [
+        'sequential' => 1,
+        'return' => ["display_name"],
+        'id' => $cid,
+      ]);
       // Replace sort_name with display_name in row.
       $row[$sortNameKey] = $contact['display_name'];
 

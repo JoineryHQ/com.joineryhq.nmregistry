@@ -8,7 +8,7 @@ use CRM_Nmregistry_ExtensionUtil as E;
 /**
  * Implements hook_civicrm_post().
  */
-function nmregistry_civicrm_post(string $op, string $objectName, $objectId = NULL, &$objectRef) {
+function nmregistry_civicrm_post(string $op, string $objectName, $objectId, &$objectRef) {
   if ($objectName == 'Activity' && $op == 'create' && $objectId) {
     // Upon creating an activity of the "update registry status" type, we'll make
     // corresponding changes to fields in the "registry status" custom field

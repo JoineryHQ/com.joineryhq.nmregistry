@@ -6,7 +6,10 @@ CRM.$(function($) {
 
   // Remove "contacts" label in pager (confusing for UX)
   var pagerLabel = $('.crm-pager').first().find('.crm-pager-nav').last();
-  pagerLabel.html(pagerLabel.html().replace(/\sContact\s/, ''));
+  if (pagerLabel.length) {
+    // Only do this if we actually have a pager label (which doesn't exist on short search results).
+    pagerLabel.html(pagerLabel.html().replace(/\sContact\s/, ''));
+  }
   
   // Hide proximity Country criteria in form.
   $('#prox_country_id').closest('tr').hide();

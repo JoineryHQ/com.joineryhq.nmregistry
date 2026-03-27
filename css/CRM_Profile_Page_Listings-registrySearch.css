@@ -2,19 +2,6 @@
   background-color: transparent;
   min-height: 2.5em;
 }
-.crm-container div.crm-search-results .crm-pager a.crm-pager-link.action-item.crm-hover-button {
-    background: #ccc;
-    padding: 0.5em 1em;
-    color: #333;
-    border: 1px solid #aaa;
-    border-radius: .5em;
-}
-.crm-container div.crm-search-results .crm-pager a.crm-pager-link.action-item.crm-hover-button:hover {
-  background-color: #ddd;
-}
-.crm-container div.crm-search-results .crm-pager .element-right {
-  margin-right: 0;
-}
 
 .crm-container div.crm-search-results tbody {
   display: flex;
@@ -31,18 +18,10 @@
   display: none;
 }
 
-.crm-container div.crm-search-results tbody tr.even-row, 
-.crm-container div.crm-search-results tbody tr.odd-row {
-  background-color: #F3F1E9;
-  border: 1px solid #F3F1E9;
-}
 .crm-container div.crm-search-results tbody tr {
   position: relative;
   width: calc(33% - 20px);
   padding: 20px;
-}
-.crm-container div.crm-search-results tbody tr:hover {
-  background-color: #FFFEFB;
 }
 
 .crm-container div.crm-search-results tbody td {

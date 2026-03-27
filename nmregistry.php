@@ -418,7 +418,7 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
     // Determine which row column has "sort_name"
     $sortNameKey = NULL;
     foreach ($headers as $headerKey => $header) {
-      if ($header['field_name'] == 'sort_name') {
+      if (($header['field_name'] ?? '') == 'sort_name') {
         $sortNameKey = $headerKey;
         break;
       }

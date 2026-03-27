@@ -1,0 +1,28 @@
+/* Styles for individual profile */
+
+/* styles for background check badge */
+div#nmregistry-profile-view div#nmregistry-profile-view-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 2em;
+  flex-wrap: wrap;
+}
+div#nmregistry-profile-view img#nmregistry-profile-background-check-badge {
+  width: 200px;
+}
+/* styles for background check badge "help" icon" */
+div#nmregistry-profile-view a#nmregistry-profile-background-check-badge-wrapper img#nmregistry-profile-background-check-badge-help {
+  vertical-align: top;
+  position: relative;
+  top: 0px;
+  right: 0px;
+  width: 25px;
+  transition: top .25s, right .25s, width .25s;
+}
+div#nmregistry-profile-view a#nmregistry-profile-background-check-badge-wrapper:hover img#nmregistry-profile-background-check-badge-help,
+div#nmregistry-profile-view a#nmregistry-profile-background-check-badge-wrapper:focus img#nmregistry-profile-background-check-badge-help {
+  top: -3px;
+  right: 3px;
+  width: 31px;
+  transition: top .25s, right .25s, width .25s;
+}

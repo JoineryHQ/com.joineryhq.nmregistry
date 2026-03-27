@@ -95,6 +95,7 @@ function nmregistry_civicrm_pageRun($page) {
   }
   if ($pageName == 'CRM_Profile_Page_View') {
     $unapprovedListingProfileId = 19; // TODO: GET THIS FROM A SETTING.
+    $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
     $gid = $page->getVar('_gid');
     if ($gid == $unapprovedListingProfileId) {
       // Bounce user if they don't have 'administer civicrm'
@@ -112,6 +113,14 @@ function nmregistry_civicrm_pageRun($page) {
       if (!$contactGetCount) {
         CRM_Core_Session::setStatus('Contact is not currently listed in the registry. This information is for your review.');
       }
+    }
+    if (
+      $gid == $unapprovedListingProfileId
+      || $gid == $individualListingProfileId
+    ) {
+      // This is a live or preview listing.
+      // Add css file for this page.
+      CRM_Core_Resources::singleton()->addStyleFile(E::LONG_NAME, 'css/CRM_Profile_Page_View-registryProfile.css');
     }
   }
 }

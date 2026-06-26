@@ -243,8 +243,12 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
       $form->assign('nmregistryIntroText', $introText);
 
       $form->assign('isBackgroundCheckGood', (int)CRM_Nmregistry_Utils::isBackgroundCheckGood($cid));
-      $form->assign('bacgroundCheckInfoUrl', '/respite-provider-background-checks'); // TODO: GET THIS FROM A SETTING.
+      $form->assign('backgroundCheckInfoUrl', '/respite-provider-background-checks'); // TODO: GET THIS FROM A SETTING.
 
+      if (CRM_Core_Permission::check('registry contact providers')) {
+        $form->assign('contactProviderUrl', CRM_Nmregistry_Utils::getContactProviderUrl($cid));
+      }
+      
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
       if ($uid) {
         $avatarSize = Civi::settings()->get('nmregistry_avatar_size');
@@ -454,7 +458,7 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
       $query = parse_url($viewUrl, PHP_URL_QUERY);
       parse_str($query, $params);
       $cid = $params['id'] ?? null;
-      // ... add the theme 'ligthbox' parameters to the url
+      // ... add the theme 'lightbox' parameters to the url
       $civiUrlObject = \Civi::url($viewUrl, 'a');
       foreach ($themeLightboxParams as $themeLightboxParam) {
         $civiUrlObject->addQuery([$themeLightboxParam => 1]);
@@ -492,5 +496,17 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
       }
     }
   }
+}
 
+function nmregistry_civicrm_permission(array &$newPermissions): void {
+  $newPermissions['registry contact providers'] = [
+    'label' => E::ts('Registry: contact providers'),
+    'description' => E::ts('Send a message to registry providers'),
+    'implies' => [],
+  ];
+  $newPermissions['registry view my provider messages'] = [
+    'label' => E::ts('Registry: view my provider messages'),
+    'description' => E::ts('View "contact a provider" messages sent to me'),
+    'implies' => [],
+  ];
 }

@@ -246,4 +246,9 @@ class CRM_Nmregistry_Utils {
     return ($backgroundCheckDateTime  > $minDateTime);
   }
 
+  public static function getContactProviderUrl($cid) {
+    // TODO: this is a site-built WP page which embeds a site-built afform path; get this from a setting, and define the sk and afform in this extension.
+    $ret = '/contact-a-provider/?lightbox=1&lightbox-nolink=1#?Individual1=' . $cid;
+    return $ret;
+  }
 }

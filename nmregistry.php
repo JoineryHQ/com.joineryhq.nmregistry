@@ -248,7 +248,10 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
       if (CRM_Core_Permission::check('registry contact providers')) {
         $form->assign('contactProviderUrl', CRM_Nmregistry_Utils::getContactProviderUrl($cid));
       }
-      
+
+      $form->assign('isAnonymous', (!CRM_Core_Session::getLoggedInContactID()));
+      $form->assign('loginUrl', '/account-login'); // TODO: GET THIS FROM A SETTING.
+
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
       if ($uid) {
         $avatarSize = Civi::settings()->get('nmregistry_avatar_size');

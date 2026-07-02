@@ -19,5 +19,9 @@
   <p>
     <a class="crm-pager-link action-item crm-hover-button fancybox-iframe" href="{$contactProviderUrl}">{ts}Contact this provider{/ts}</a>
   </p>
+  {elseif $isAnonymous}
+  <p>
+    <a class="crm-pager-link action-item crm-hover-button" href="{$loginUrl}">{ts}Log in to contact this provider{/ts}</a>
+  </p>
   {/if}
 </div>

@@ -22,7 +22,7 @@
   </p>
   {elseif $isAnonymous}
   <p>
-    <a class="crm-pager-link action-item crm-hover-button" href="{$loginUrl}">{ts}Log in to contact this provider{/ts}</a>
+    <a class="crm-pager-link action-item crm-hover-button" target="_top" href="{$loginUrl}">{ts}Log in to contact this provider{/ts}</a>
   </p>
   {/if}
 </div>

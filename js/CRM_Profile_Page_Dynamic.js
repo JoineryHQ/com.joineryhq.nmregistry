@@ -22,12 +22,20 @@ CRM.$(function($) {
     CRM.api4('NmregistryFavorite', action, args).then(function(results) {
       handleResults(action);
     }, function(failure) {
+      // Un-throb the control.
+      $('#nmregistry-favorite').removeClass('fa-beat-fade');
       // handle failure?
     });
+
+    // Throb the control.
+    $('#nmregistry-favorite').addClass('fa-beat-fade');
   };
 
   // Results handler for favorite/un-favorite api call.
   var handleResults = function handleResults(action) {
+    // Un-throb the control.
+    $('#nmregistry-favorite').removeClass('fa-beat-fade');
+
     if(action == 'createOwn') {
       // Results are for 'favorite', so mark as favorited.
       $('#nmregistry-favorite').data('is-favorited', 1);

@@ -5,6 +5,16 @@ require_once 'nmregistry.civix.php';
 use CRM_Nmregistry_ExtensionUtil as E;
 // phpcs:enable
 
+
+/**
+ * Implements hook_civicrm_queryObjects().
+ */
+function nmregistry_civicrm_queryObjects(&$queryObjects, $type = 'Contact') {
+  if ($type == 'Contact') {
+    $queryObjects[] = new CRM_Nmregistry_Contact_BAO_Query();
+  }
+}
+
 /**
  * Implements hook_civicrm_post().
  */

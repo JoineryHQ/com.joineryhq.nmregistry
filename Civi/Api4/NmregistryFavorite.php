@@ -11,13 +11,32 @@ namespace Civi\Api4;
  * @package Civi\Api4
  */
 class NmregistryFavorite extends Generic\DAOEntity {
-  
+
+  public static function addOwn($checkPermissions = TRUE): Action\NmregistryFavorite\CreateOwn {
+    return (new Action\NmregistryFavorite\CreateOwn(static::getEntityName(), __FUNCTION__))
+      ->setCheckPermissions($checkPermissions);
+  }
+
+  public static function deleteOwn($checkPermissions = TRUE): Action\NmregistryFavorite\DeleteOwn {
+    return (new Action\NmregistryFavorite\DeleteOwn(static::getEntityName(), __FUNCTION__))
+      ->setCheckPermissions($checkPermissions);
+  }
+
+  /**
+   * @param bool $checkPermissions
+   * @return DAOGetAction
+   */
+  public static function getOwn($checkPermissions = TRUE): Action\NmregistryFavorite\GetOwn {
+    return (new Action\NmregistryFavorite\GetOwn(static::getEntityName(), __FUNCTION__))
+      ->setCheckPermissions($checkPermissions);
+  }
+
   /**
    * Alter entity fields for *own actions.
    *
-   * These actions don't take a user_contact_id param, because it's auto-calculated 
+   * These actions don't take a user_contact_id param, because it's auto-calculated
    * from the current user. (And 'id' is nonsensical.)
-   * 
+   *
    * @return string
    */
   public static function _ownActionFields() {

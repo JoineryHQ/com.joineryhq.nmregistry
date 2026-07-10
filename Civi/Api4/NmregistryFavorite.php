@@ -22,13 +22,20 @@ class NmregistryFavorite extends Generic\DAOEntity {
    */
   public static function _ownActionFields() {
     // First get the fields as they would be for the 'create' action.
-    $gatherer = \Civi::container()->get('spec_gatherer');
-    $fields = $gatherer->getAllFields(static::getEntityName(), 'create');
+    $fields = static::_fields();
     // Remove field user_contact_id and id.
     unset($fields['user_contact_id']);
     unset($fields['id']);
     // Improve the description for favorite_contact_id
     $fields['favorite_contact_id']['description'] = "Contact to add to current user's favorites";
     return $fields;
+  }
+
+  /**
+   * Get the fields for this entity, as they would be for the create action.
+   */
+  public static function _fields() {
+    $gatherer = \Civi::container()->get('spec_gatherer');
+    return $gatherer->getAllFields(static::getEntityName(), 'create');
   }
 }

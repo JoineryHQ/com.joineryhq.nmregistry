@@ -1,79 +1,34 @@
 <?php
+declare(strict_types = 1);
 
 namespace Civi\Api4;
 
 /**
- * API pseudo-entity for the Nmregistry extension.
+ * NmregistryFavorite entity.
+ *
+ * Provided by the New Mexico Registry extension.
  *
  * @package Civi\Api4
  */
-class NmregistryFavorite extends Generic\AbstractEntity {
-  const relationshipTypeId = 11; // TODO: GET THIS FROM A SETTING.
-
+class NmregistryFavorite extends Generic\DAOEntity {
+  
   /**
-   * Every entity **must** implement `getFields`.
+   * Alter entity fields for *own actions.
    *
-   * This tells the action classes what input/output fields to expect,
-   * and also populates the _API Explorer_.
-   *
-   * The `BasicGetFieldsAction` takes a callback function. We could have defined the function elsewhere
-   * and passed a `callable` reference to it, but passing in an anonymous function works too.
-   *
-   * The callback function takes the `BasicGetFieldsAction` object as a parameter in case we need to access its properties.
-   * Especially useful is the `getAction()` method as we may need to adjust the list of fields per action.
-   *
-   * Note that it's possible to bypass this function if an action class lists its own fields by declaring a `fields()` method.
-   *
-   * Read more about how to implement your own `GetFields` action:
-   * @see \Civi\Api4\Generic\BasicGetFieldsAction
-   *
-   * @param bool $checkPermissions
-   *
-   * @return Generic\BasicGetFieldsAction
+   * These actions don't take a user_contact_id param, because it's auto-calculated 
+   * from the current user. (And 'id' is nonsensical.)
+   * 
+   * @return string
    */
-  public static function getFields($checkPermissions = TRUE) {
-    return (new Generic\BasicGetFieldsAction(__CLASS__, __FUNCTION__, function($getFieldsAction) {
-      return [
-        [
-          'name' => 'contactId',
-          'required' => TRUE,
-          'data_type' => 'Int',
-          'fk_entity' => 'Contact',
-          'fk_column' => 'id',
-          'input_type' => 'EntityRef',
-          'description' => 'ID of contact to be favorited/unfavorited by current user',
-        ],
-      ];
-    }))->setCheckPermissions($checkPermissions);
+  public static function _ownActionFields() {
+    // First get the fields as they would be for the 'create' action.
+    $gatherer = \Civi::container()->get('spec_gatherer');
+    $fields = $gatherer->getAllFields(static::getEntityName(), 'create');
+    // Remove field user_contact_id and id.
+    unset($fields['user_contact_id']);
+    unset($fields['id']);
+    // Improve the description for favorite_contact_id
+    $fields['favorite_contact_id']['description'] = "Contact to add to current user's favorites";
+    return $fields;
   }
-
-  /**
-   * @param bool $checkPermissions
-   * @return Generic\BasicGetAction
-   */
-//  public static function get($checkPermissions = TRUE) {
-//    return (new Action\NmregistryFavorite\Get(__CLASS__, __FUNCTION__))
-//      ->setCheckPermissions($checkPermissions);
-//  }
-
-  /**
-   * @param bool $checkPermissions
-   * @inheritDoc
-   * @see \Civi\Api4\Generic\BasicCreateAction
-   * @return Generic\BasicCreateAction
-   */
-  public static function create($checkPermissions = TRUE) {
-    return (new Action\NmregistryFavorite\Create(__CLASS__, __FUNCTION__))
-      ->setCheckPermissions($checkPermissions);
-  }
-
-  /**
-   * @param bool $checkPermissions
-   * @return DAODeleteAction
-   */
-  public static function delete($checkPermissions = TRUE) {
-    return (new Action\NmregistryFavorite\Delete(__CLASS__, __FUNCTION__))
-      ->setCheckPermissions($checkPermissions);
-  }
-
 }

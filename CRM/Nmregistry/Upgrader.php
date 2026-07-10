@@ -75,17 +75,15 @@ class CRM_Nmregistry_Upgrader extends CRM_Extension_Upgrader_Base {
   // }
 
   /**
-   * Example: Run an external SQL script.
+   * Add table nmregistry_favorite
    *
    * @return TRUE on success
    * @throws CRM_Core_Exception
    */
-  // public function upgrade_4201(): bool {
-  //   $this->ctx->log->info('Applying update 4201');
-  //   // this path is relative to the extension base dir
-  //   $this->executeSqlFile('sql/upgrade_4201.sql');
-  //   return TRUE;
-  // }
+  public function upgrade_4201(): bool {
+    E::schema()->createEntityTable('schema/NmregistryFavorite.entityType.php');
+    return TRUE;
+  }
 
   /**
    * Example: Run a slow upgrade process by breaking it up into smaller chunk.

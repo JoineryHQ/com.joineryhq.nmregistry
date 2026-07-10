@@ -22,6 +22,7 @@ class DeleteOwn extends DAODeleteAction {
 
     // Force user_contact_id in WHERE.
     $this->addWhere('user_contact_id', '=', $cid);
+    $this->setCheckPermissions(FALSE);
 
     return parent::_run($result);
   

@@ -23,7 +23,8 @@ class CreateOwn extends DAOCreateAction {
 
     // Call the save() api, because it supports setMatch; this way we're idempotent
     // and don't get errors on the unique index.
-    $saveResult = \Civi\Api4\NmregistryFavorite::save($this->getCheckPermissions())
+    $saveResult = \Civi\Api4\NmregistryFavorite::save()
+      ->setCheckPermissions(FALSE)
       ->addRecord([
         'user_contact_id' => $cid,
         'favorite_contact_id' => $this->values['favorite_contact_id'],

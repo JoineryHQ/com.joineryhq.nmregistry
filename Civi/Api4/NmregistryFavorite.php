@@ -11,6 +11,18 @@ namespace Civi\Api4;
  * @package Civi\Api4
  */
 class NmregistryFavorite extends Generic\DAOEntity {
+  /**
+   * @inheritDoc
+   */
+  public static function permissions($entityName = NULL): array {
+    $permissions = parent::permissions($entityName);
+
+    $permissions['getOwn'] = ['registry favorite providers'];
+    $permissions['createOwn'] = ['registry favorite providers'];
+    $permissions['deleteOwn'] = ['registry favorite providers'];
+
+    return $permissions;
+  }
 
   public static function addOwn($checkPermissions = TRUE): Action\NmregistryFavorite\CreateOwn {
     return (new Action\NmregistryFavorite\CreateOwn(static::getEntityName(), __FUNCTION__))

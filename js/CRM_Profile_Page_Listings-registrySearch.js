@@ -1,4 +1,30 @@
 CRM.$(function($) {
+
+  // Message listener (for message from popup iframes)
+  var listenMessage = function listenMessage(e) {
+    if (e.origin !== window.location.origin) {
+      // The iframe is not our site, so ignore the message.
+      return;
+    }
+
+    if (e.data.type === 'isFavoriteChanged') {
+      // Message is about a favorited-status chagne.
+
+      var elFavoriteControl = $('.nmregistry-favorite[data-provider-cid=' + e.data.providerCid + ']');
+
+      if (e.data.isFavorite) {
+        elFavoriteControl.data('is-favorited', 1);
+        elFavoriteControl.addClass('fa-solid');
+        elFavoriteControl.removeClass('fa-regular');
+      }
+      else {
+        elFavoriteControl.data('is-favorited', 0);
+        elFavoriteControl.addClass('fa-regular');
+        elFavoriteControl.removeClass('fa-solid');
+      }
+    }
+  }
+
   // Remove ajax-driven click handlers in results pager.
   var formSelector = ('form.' + CRM.vars.nmregistry.formClass || '#crm-main-content-wrapper');
   var $form = $(formSelector);
@@ -10,7 +36,7 @@ CRM.$(function($) {
     // Only do this if we actually have a pager label (which doesn't exist on short search results).
     pagerLabel.html(pagerLabel.html().replace(/\sContact\s/, ''));
   }
-  
+
   // Hide proximity Country criteria in form.
   $('#prox_country_id').closest('tr').hide();
 
@@ -41,4 +67,8 @@ CRM.$(function($) {
   // (These are alreayd hidden by css in the them, but let's just remove them entirely here too.)
   $('div.crm-search-results > table > tbody > tr th:nth-child(1)').remove();
   $('div.crm-search-results > table > tbody > tr td:nth-child(1)').remove();
+
+  // Define a listener for messages from child pages (iframes).
+  window.addEventListener('message', listenMessage);
+
 });

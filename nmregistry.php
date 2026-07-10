@@ -101,6 +101,11 @@ function nmregistry_civicrm_pageRun($page) {
       CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Listings-registrySearch.js');
       // Add css file for this page.
       CRM_Core_Resources::singleton()->addStyleFile(E::LONG_NAME, 'css/CRM_Profile_Page_Listings-registrySearch.css');
+
+      // If this is 'my favorites' view, adjust title to say so.
+      if(CRM_Utils_Request::retrieve('registryFavorites', 'Int', FALSE, NULL) == 1) {
+        CRM_Utils_System::setTitle(CRM_Utils_System::$title . ' - ' . E::ts('My Favorites'));
+      }
     }
   }
   if ($pageName == 'CRM_Profile_Page_View') {
@@ -280,7 +285,10 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
         $isFavorited = (bool) $favoriteCount;
         $form->assign('isFavorited', $isFavorited);
         // Tell the template whether that this is the live (not preview) profile.
-        $form->assign('isLiveProfile', TRUE);
+        $form->assign('favoriteControlHtml', CRM_Nmregistry_Utils_Markup::favoriteControl($isFavorited, $cid));
+      }
+      else {
+        $form->assign('favoriteControlHtml', CRM_Nmregistry_Utils_Markup::favoriteControl($isFavorited, $cid, TRUE));
       }
       // Add js for on-page behaviors (we're doing this unconditionally here, because
       // there's nothing in the js filename that suggests it's only for live profile).
@@ -452,6 +460,15 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
   $themeLightboxParams = ['lightbox', 'lightbox-nolink']; // TODO: GET THIS FROM A SETTING.
   $themePopupClass = 'fancybox-iframe'; // TODO: GET THIS FROM A SETTING.
   if (substr($ufGroupName, -3) == '_'. $individualListingProfileId) {
+    // This is our "search registry" profile,
+
+    // Get user's favorited providers so we can highlight them.
+    $ownFavorites = \Civi\Api4\NmregistryFavorite::getOwn()
+      ->addSelect('favorite_contact_id')
+      ->setLimit(0)
+      ->execute();
+    $ownFavoriteCids = CRM_Utils_Array::collect('favorite_contact_id', (array)$ownFavorites);
+
     // Determine which row column has the "Actions" links.
     $actionsKey = NULL;
     foreach (array_reverse($headers, TRUE) as $headerKey => $header) {
@@ -497,6 +514,7 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
         $civiUrlObject->addQuery([$themeLightboxParam => 1]);
       }
       $viewLink->attr('href', (string) $civiUrlObject);
+      $viewLink->attr('id', "view-link-{$cid}");
       $coder = new \Civi\Angular\Coder();
       $row[$actionsKey] = $coder->encode($docActions);
 
@@ -507,7 +525,7 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
         'id' => $cid,
       ]);
       // Replace sort_name with display_name in row.
-      $row[$sortNameKey] = $contact['display_name'];
+      $row[$sortNameKey] = $contact['display_name'] . CRM_Nmregistry_Utils_Markup::favoriteControl((in_array($cid, $ownFavoriteCids)), $cid);
 
       // Determine the avatar for this provider.
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);

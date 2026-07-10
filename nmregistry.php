@@ -90,7 +90,7 @@ function nmregistry_civicrm_pageRun($page) {
   if ($pageName == 'CRM_Profile_Page_Listings') {
     $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
     $gid = $page->getVar('_gid');
-    if ($gid = $individualListingProfileId) {
+    if ($gid == $individualListingProfileId) {
       // Prep js vars and pass to js.
       $form = $page->getTemplateVars('form');
       $jsVars = [
@@ -270,15 +270,20 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
         $form->assign('nmregistryUserAvatarSize', $avatarSize);
       }
 
-      // is this provider favorited by the user?
-      $favoriteCount = \Civi\Api4\NmregistryFavorite::getOwn()
-        ->addWhere('favorite_contact_id', '=', $cid)
-        ->execute()
-        ->count();
-      $isFavorited = (bool) $favoriteCount;
-      $form->assign('isFavorited', $isFavorited);
-
-      // Add js for on-page behaviors.
+      // For the live (not preview) profile, enable 'favoriting' features.
+      if ($profileId == $individualListingProfileId) {
+        // is this provider favorited by the user?
+        $favoriteCount = \Civi\Api4\NmregistryFavorite::getOwn()
+          ->addWhere('favorite_contact_id', '=', $cid)
+          ->execute()
+          ->count();
+        $isFavorited = (bool) $favoriteCount;
+        $form->assign('isFavorited', $isFavorited);
+        // Tell the template whether that this is the live (not preview) profile.
+        $form->assign('isLiveProfile', TRUE);
+      }
+      // Add js for on-page behaviors (we're doing this unconditionally here, because
+      // there's nothing in the js filename that suggests it's only for live profile).
       CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Dynamic.js');
       $jsVars = [
         'providerCid' => $cid,

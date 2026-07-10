@@ -7,7 +7,13 @@
     {else}
       {assign var="fillType" value="fa-regular"}
     {/if}
-    <div id="nmregistry-favorite" class="crm-i fa-heart {$fillType}" data-is-favorited="{$isFavorited}"></div>
+    {if $isLiveProfile}
+      {* Live profile. Show a clickable 'favorite/un-favorite' icon/control *}
+      <div id="nmregistry-favorite" class="crm-i fa-heart {$fillType}" data-is-favorited="{$isFavorited}"></div>
+    {else}
+      {* Preview profile. Just show a placeholder 'favorite/un-favorite' icon *}
+      <div id="nmregistry-favorite-placeholder" class="crm-i fa-heart fa-solid" title="Favoriting not available in preview."></div>
+    {/if}
     {if $isBackgroundCheckGood}
         {capture assign=badgeSrc}{crmResURL ext="nmregistry" file="img"}{/capture}
         <a class="fancybox-iframe" title="About Background Checks" href="{$backgroundCheckInfoUrl}?lightbox=1"  id="nmregistry-profile-background-check-badge-wrapper">

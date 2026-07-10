@@ -28,6 +28,10 @@ div#nmregistry-profile-view a#nmregistry-profile-background-check-badge-wrapper:
 }
 
 /* styles for nmregistry-favorite icon/control */
-#nmregistry-favorite {
+#nmregistry-favorite,
+#nmregistry-favorite-placeholder {
   font-size: 2em;
+}
+#nmregistry-favorite-placeholder {
+  color: #bbb;
 }

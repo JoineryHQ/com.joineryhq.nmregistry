@@ -91,21 +91,22 @@ function nmregistry_civicrm_pageRun($page) {
     $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
     $gid = $page->getVar('_gid');
     if ($gid == $individualListingProfileId) {
-      // Prep js vars and pass to js.
+      // Prep js vars and pass to js and tpl.
       $form = $page->getTemplateVars('form');
       $jsVars = [
         'formClass' => $form['formClass'],
       ];
+      // If this is 'my favorites' view, adjust title to say so, and tell js.
+      if(CRM_Utils_Request::retrieve('registryFavorites', 'Int', FALSE, NULL) == 1) {
+        CRM_Utils_System::setTitle(CRM_Utils_System::$title . ' - ' . E::ts('My Favorites'));
+        $jsVars['isFavorites'] = TRUE;
+      }
       CRM_Core_Resources::singleton()->addVars('nmregistry', $jsVars);
       // Add js file for this page.
       CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Listings-registrySearch.js');
       // Add css file for this page.
       CRM_Core_Resources::singleton()->addStyleFile(E::LONG_NAME, 'css/CRM_Profile_Page_Listings-registrySearch.css');
 
-      // If this is 'my favorites' view, adjust title to say so.
-      if(CRM_Utils_Request::retrieve('registryFavorites', 'Int', FALSE, NULL) == 1) {
-        CRM_Utils_System::setTitle(CRM_Utils_System::$title . ' - ' . E::ts('My Favorites'));
-      }
     }
   }
   if ($pageName == 'CRM_Profile_Page_View') {

@@ -131,9 +131,11 @@ class CRM_Nmregistry_Utils {
       ];
     }
 
-    // has not passed a background check in the last 12 monhts.
+    // has not passed a background check in the last 12 months.
+    // fixme: this should be a setting. Commenting this out temporaily for scrc.
+    /*
     if (!CRM_Nmregistry_Utils::isBackgroundCheckGood($cid)) {
-      $requirementDate = strtotime('February 15, 2026');
+      $requirementDate = strtotime('March 15, 2026');
       $tsParams = [
         '1'=> date('F j, Y', $requirementDate),
       ];
@@ -150,6 +152,7 @@ class CRM_Nmregistry_Utils {
         $statusWarnings['BACKGROUND_CHECK'] = $check;
       }
     }
+     */
 
     if (empty($statusChecks)) {
       // If we haven't logged any issues, add one 'success' status indicating that
@@ -250,5 +253,45 @@ class CRM_Nmregistry_Utils {
     // TODO: this is a site-built WP page which embeds a site-built afform path; get this from a setting, and define the sk and afform in this extension.
     $ret = '/contact-a-provider/?lightbox=1&lightbox-nolink=1#?Individual1=' . $cid;
     return $ret;
+  }
+
+  /**
+   * Test whether user has access to favorit/un-favorite features.
+   * @return bool
+   */
+  public static function userCanFavorite() {
+    static $cache;
+    if (!isset($cache)) {
+      $cid = CRM_Core_Session::getLoggedInContactID();
+      if (!$cid) {
+        // Favoriting requires a logged-in user.
+        $cache = FALSE;
+      }
+      else {
+        $cache = CRM_Core_Permission::check('registry favorite providers');
+      }
+    }
+    return $cache;
+  }
+
+  /**
+   * Calculate a new URL, based on the current URL but with the given query parameters stripped.
+   *
+   * @param type $queryParametersToStrip
+   */
+  public static function redirectExcludeParams($queryParametersToStrip) {
+    $params = $_GET;
+    foreach ($queryParametersToStrip as $queryParameterToStrip) {
+      unset($params[$queryParameterToStrip]);
+    }
+
+    $url = CRM_Utils_System::url(
+      CRM_Utils_System::currentPath(),
+      $params,
+      TRUE
+    );
+
+    CRM_Utils_System::redirect($url);
+    CRM_Utils_System::civiExit();
   }
 }

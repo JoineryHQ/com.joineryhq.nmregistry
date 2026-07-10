@@ -11,6 +11,11 @@ use CRM_Nmregistry_ExtensionUtil as E;
  */
 function nmregistry_civicrm_queryObjects(&$queryObjects, $type = 'Contact') {
   if ($type == 'Contact') {
+    if (!CRM_Nmregistry_Utils::userCanFavorite()) {
+      // Our Query Object is only relevant for users who can use favorites,
+      // so if they can't, just return.
+      return;
+    }
     $queryObjects[] = new CRM_Nmregistry_Contact_BAO_Query();
   }
 }
@@ -98,9 +103,15 @@ function nmregistry_civicrm_pageRun($page) {
       ];
       // If this is 'my favorites' view, adjust title to say so, and tell js.
       if(CRM_Utils_Request::retrieve('registryFavorites', 'Int', FALSE, NULL) == 1) {
+        if (!CRM_Nmregistry_Utils::userCanFavorite()) {
+          // 'Favorites' not allowed. Redirect to same page wihout this query param.
+          CRM_Nmregistry_Utils::redirectExcludeParams(['registryFavorites']);
+        }
         CRM_Utils_System::setTitle(CRM_Utils_System::$title . ' - ' . E::ts('My Favorites'));
         $jsVars['isFavorites'] = TRUE;
       }
+      // JS wants to know if user can favorite.
+      $jsVars['userCanFavorite'] = CRM_Nmregistry_Utils::userCanFavorite();
       CRM_Core_Resources::singleton()->addVars('nmregistry', $jsVars);
       // Add js file for this page.
       CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Listings-registrySearch.js');
@@ -278,15 +289,18 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
 
       // For the live (not preview) profile, enable 'favoriting' features.
       if ($profileId == $individualListingProfileId) {
-        // is this provider favorited by the user?
-        $favoriteCount = \Civi\Api4\NmregistryFavorite::getOwn()
-          ->addWhere('favorite_contact_id', '=', $cid)
-          ->execute()
-          ->count();
-        $isFavorited = (bool) $favoriteCount;
-        $form->assign('isFavorited', $isFavorited);
-        // Tell the template whether that this is the live (not preview) profile.
-        $form->assign('favoriteControlHtml', CRM_Nmregistry_Utils_Markup::favoriteControl($isFavorited, $cid));
+        // Only do this if user can access these features.
+        if (CRM_Nmregistry_Utils::userCanFavorite()) {
+          // is this provider favorited by the user?
+          $favoriteCount = \Civi\Api4\NmregistryFavorite::getOwn()
+            ->addWhere('favorite_contact_id', '=', $cid)
+            ->execute()
+            ->count();
+          $isFavorited = (bool) $favoriteCount;
+          $form->assign('isFavorited', $isFavorited);
+          // Tell the template whether that this is the live (not preview) profile.
+          $form->assign('favoriteControlHtml', CRM_Nmregistry_Utils_Markup::favoriteControl($isFavorited, $cid));
+        }
       }
       else {
         $form->assign('favoriteControlHtml', CRM_Nmregistry_Utils_Markup::favoriteControl($isFavorited, $cid, TRUE));
@@ -455,7 +469,6 @@ function _nmregistry_log_api_error(Exception $e, string $entity, string $action,
 }
 
 function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$selector ) {
-//  $selector = new CRM_Core_Selector_Controller();
   $ufGroupName = $selector::$_template->getTemplateVars('ufGroupName');
   $individualListingProfileId = 16; // TODO: GET THIS FROM A SETTING.
   $themeLightboxParams = ['lightbox', 'lightbox-nolink']; // TODO: GET THIS FROM A SETTING.
@@ -463,12 +476,16 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
   if (substr($ufGroupName, -3) == '_'. $individualListingProfileId) {
     // This is our "search registry" profile,
 
-    // Get user's favorited providers so we can highlight them.
-    $ownFavorites = \Civi\Api4\NmregistryFavorite::getOwn()
-      ->addSelect('favorite_contact_id')
-      ->setLimit(0)
-      ->execute();
-    $ownFavoriteCids = CRM_Utils_Array::collect('favorite_contact_id', (array)$ownFavorites);
+    // If we can, get user's favorited providers so we can highlight them.
+    $ownFavoriteCids = [];
+    if (CRM_Nmregistry_Utils::userCanFavorite()) {
+      $ownFavorites = \Civi\Api4\NmregistryFavorite::getOwn()
+        ->setCheckPermissions(FALSE)
+        ->addSelect('favorite_contact_id')
+        ->setLimit(0)
+        ->execute();
+      $ownFavoriteCids = CRM_Utils_Array::collect('favorite_contact_id', (array)$ownFavorites);
+    }
 
     // Determine which row column has the "Actions" links.
     $actionsKey = NULL;
@@ -526,7 +543,10 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
         'id' => $cid,
       ]);
       // Replace sort_name with display_name in row.
-      $row[$sortNameKey] = $contact['display_name'] . CRM_Nmregistry_Utils_Markup::favoriteControl((in_array($cid, $ownFavoriteCids)), $cid);
+      if (CRM_Nmregistry_Utils::userCanFavorite()) {
+        $favoriteControl = CRM_Nmregistry_Utils_Markup::favoriteControl((in_array($cid, $ownFavoriteCids)), $cid);
+      }
+      $row[$sortNameKey] = $contact['display_name'] . $favoriteControl;
 
       // Determine the avatar for this provider.
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
@@ -559,6 +579,11 @@ function nmregistry_civicrm_permission(array &$newPermissions): void {
   $newPermissions['registry view my provider messages'] = [
     'label' => E::ts('Registry: view my provider messages'),
     'description' => E::ts('View "contact a provider" messages sent to me'),
+    'implies' => [],
+  ];
+  $newPermissions['registry favorite providers'] = [
+    'label' => E::ts('Registry: favorite providers'),
+    'description' => E::ts('Favorite and un-favorite providers'),
     'implies' => [],
   ];
 }

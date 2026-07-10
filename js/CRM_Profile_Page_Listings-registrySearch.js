@@ -68,20 +68,23 @@ CRM.$(function($) {
   $('div.crm-search-results > table > tbody > tr th:nth-child(1)').remove();
   $('div.crm-search-results > table > tbody > tr td:nth-child(1)').remove();
 
-  // Add a button to toggle between 'My Favorites' and full registry.
-  if (CRM.vars.nmregistry.isFavorites) {
-    $('div.crm-title').append('<a class="crm-pager-link action-item crm-hover-button" href="/provider-search/?crmRowCount=18">All Providers</a>');
-    // Also hide the search criteria -- My Favorites is not searchable.
-    CRM.$('.crm-form-block').remove();
+  if (CRM.vars.nmregistry.userCanFavorite) {
+    // If user can favorite/un-favorite:
+    // Add a button to toggle between 'My Favorites' and full registry.
+    if (CRM.vars.nmregistry.isFavorites) {
+      $('div.crm-title').append('<a class="crm-pager-link action-item crm-hover-button" href="/provider-search/?crmRowCount=18">All Providers</a>');
+      // Also hide the search criteria -- My Favorites is not searchable.
+      CRM.$('.crm-form-block').remove();
+    }
+    else {
+      $('div.crm-title').append('<a class="crm-pager-link action-item crm-hover-button" href="/provider-search/?crmRowCount=18&registryFavorites=1">My Favorites</a>');
+    }
+    $('div.crm-title').css({
+      'display': 'flex',
+      'align-items': 'center',
+      'justify-content': 'space-between'
+    });
   }
-  else {
-    $('div.crm-title').append('<a class="crm-pager-link action-item crm-hover-button" href="/provider-search/?crmRowCount=18&registryFavorites=1">My Favorites</a>');
-  }
-  $('div.crm-title').css({
-    'display': 'flex',
-    'align-items': 'center',
-    'justify-content': 'space-between'
-  });
 
   // Define a listener for messages from child pages (iframes).
   window.addEventListener('message', listenMessage);

@@ -2,11 +2,6 @@
 <div id="nmregistry-profile-view">
   <div id="nmregistry-profile-view-header">
     <div id="nmregistry-user-avatar">{$nmregistryUserAvatar}</div>
-    {if $isFavorited}
-      {assign var="fillType" value="fa-solid"}
-    {else}
-      {assign var="fillType" value="fa-regular"}
-    {/if}
     {$favoriteControlHtml}
     {if $isBackgroundCheckGood}
         {capture assign=badgeSrc}{crmResURL ext="nmregistry" file="img"}{/capture}

@@ -2,6 +2,12 @@
 <div id="nmregistry-profile-view">
   <div id="nmregistry-profile-view-header">
     <div id="nmregistry-user-avatar">{$nmregistryUserAvatar}</div>
+    {if $isFavorited}
+      {assign var="fillType" value="fa-solid"}
+    {else}
+      {assign var="fillType" value="fa-regular"}
+    {/if}
+    <div id="nmregistry-favorite" class="crm-i fa-heart {$fillType}" data-is-favorited="{$isFavorited}"></div>
     {if $isBackgroundCheckGood}
         {capture assign=badgeSrc}{crmResURL ext="nmregistry" file="img"}{/capture}
         <a class="fancybox-iframe" title="About Background Checks" href="{$backgroundCheckInfoUrl}?lightbox=1"  id="nmregistry-profile-background-check-badge-wrapper">

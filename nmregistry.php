@@ -259,6 +259,21 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
         $form->assign('nmregistryUserAvatar', $avatar);
         $form->assign('nmregistryUserAvatarSize', $avatarSize);
       }
+
+      // is this provider favorited by the user?
+      $favoriteCount = \Civi\Api4\NmregistryFavorite::getOwn()
+        ->addWhere('favorite_contact_id', '=', $cid)
+        ->execute()
+        ->count();
+      $isFavorited = (bool) $favoriteCount;
+      $form->assign('isFavorited', $isFavorited);
+
+      // Add js for on-page behaviors.
+      CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Dynamic.js');
+      $jsVars = [
+        'providerCid' => $cid,
+      ];
+      CRM_Core_Resources::singleton()->addVars('nmregistry', $jsVars);
     }
   }
   elseif ($formName == 'CRM_Profile_Form_Edit') {

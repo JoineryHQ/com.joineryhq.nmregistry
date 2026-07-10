@@ -26,3 +26,8 @@ div#nmregistry-profile-view a#nmregistry-profile-background-check-badge-wrapper:
   width: 31px;
   transition: top .25s, right .25s, width .25s;
 }
+
+/* styles for nmregistry-favorite icon/control */
+#nmregistry-favorite {
+  font-size: 2em;
+}

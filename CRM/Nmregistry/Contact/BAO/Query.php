@@ -14,7 +14,7 @@ class CRM_Nmregistry_Contact_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     // Only if mode is 'contacts' and we haven't done this already.
     if (
       $query->_mode != CRM_Contact_BAO_Query::MODE_CONTACTS
-      || Civi::$statics['NMREGISTRY_LIMIT_FAVORITES_DONE']
+      || (Civi::$statics['NMREGISTRY_LIMIT_FAVORITES_DONE'] ?? FALSE)
     ) {
       return;
     }

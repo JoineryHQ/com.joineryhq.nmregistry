@@ -392,6 +392,8 @@ function nmregistry_civicrm_config(&$config) {
   _nmregistry_civix_civicrm_config($config);
 }
 
+
+
 /**
  * Implements hook_civicrm_install().
  *
@@ -584,6 +586,11 @@ function nmregistry_civicrm_permission(array &$newPermissions): void {
   $newPermissions['registry favorite providers'] = [
     'label' => E::ts('Registry: favorite providers'),
     'description' => E::ts('Favorite and un-favorite providers'),
+    'implies' => [],
+  ];
+  $newPermissions['registry compare providers'] = [
+    'label' => E::ts('Registry: compare providers'),
+    'description' => E::ts('Compare multiple providers in a single view'),
     'implies' => [],
   ];
 }

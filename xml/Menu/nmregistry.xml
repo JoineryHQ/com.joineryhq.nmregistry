@@ -6,4 +6,10 @@
     <title>New Mexico Registry: Settings</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/nmregistry/compare</path>
+    <page_callback>CRM_Nmregistry_Page_Compare</page_callback>
+    <title>Compare providers</title>
+    <access_arguments>registry compare providers</access_arguments>
+  </item>
 </menu>

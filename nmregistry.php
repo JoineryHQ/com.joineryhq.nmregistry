@@ -113,11 +113,14 @@ function nmregistry_civicrm_pageRun($page) {
       // JS wants to know if user can favorite.
       $jsVars['userCanFavorite'] = CRM_Nmregistry_Utils::userCanFavorite();
       CRM_Core_Resources::singleton()->addVars('nmregistry', $jsVars);
+
       // Add js file for this page.
       CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Listings-registrySearch.js');
-      // Add css file for this page.
+      // Add primary css file for this page.
       CRM_Core_Resources::singleton()->addStyleFile(E::LONG_NAME, 'css/CRM_Profile_Page_Listings-registrySearch.css');
-
+      // Add JS and CSS for selection affordances for the compare-providers features.
+      CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/CRM_Profile_Page_Listings-registrySearch-compare.js', 110);
+      CRM_Core_Resources::singleton()->addStyleFile(E::LONG_NAME, 'css/CRM_Profile_Page_Listings-registrySearch-compare.css');
     }
   }
   if ($pageName == 'CRM_Profile_Page_View') {
@@ -535,6 +538,7 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
       }
       $viewLink->attr('href', (string) $civiUrlObject);
       $viewLink->attr('id', "view-link-{$cid}");
+      $viewLink->addClass('nmregistry-view-profile-link');
       $coder = new \Civi\Angular\Coder();
       $row[$actionsKey] = $coder->encode($docActions);
 

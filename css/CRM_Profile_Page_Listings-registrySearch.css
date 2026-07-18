@@ -19,9 +19,10 @@
 }
 
 .crm-container div.crm-search-results tbody tr {
-  position: relative;
+  position: relative;  /* Anchor for .nmregistry-compare-cell in CRM_Profile_Page_Listings-registrySearch-compare.css */
   width: calc(33% - 20px);
   padding: 20px;
+  /* padding-bottom: 3em;   Coupling: reserves space for the absolutely-positioned Compare cell at the bottom of the card (commit 17:07 UTC, jo#23). If the cell's measured height changes, this must change with it. */
 }
 
 .crm-container div.crm-search-results tbody td {
@@ -30,7 +31,7 @@
   text-align: center;
   font-size: 1.2em;
 }
-.crm-container div.crm-search-results tbody td:last-child {
+.crm-container div.crm-search-results tbody td:has(a.nmregistry-view-profile-link) {
   position: absolute;
   top: 0;
   left: 0;
@@ -38,7 +39,7 @@
   width: 100%;
   padding: 0;
 }
-.crm-container div.crm-search-results tbody td:last-child a {
+.crm-container div.crm-search-results tbody td:has(a.nmregistry-view-profile-link) a {
     height: 100%;
     display: block;
     color: transparent;
@@ -47,7 +48,7 @@
     padding: 0;
     border: 1px solid transparent;
 }
-.crm-container div.crm-search-results tbody td:last-child a:hover {
+.crm-container div.crm-search-results tbody td:has(a.nmregistry-view-profile-link) a:hover {
   border: none;
 }
 

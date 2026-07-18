@@ -57,13 +57,12 @@ class CRM_Nmregistry_Page_Compare extends CRM_Core_Page {
    * \$_GET['cid'] and then restores it; this run() then reads the same key.
    */
   public function run() {
-    $cidCsv = CRM_Utils_Request::retrieve('cid', 'String', $this, FALSE, NULL);
-    $cidCsv = (string) ($cidCsv ?? '');
+    $cidQueryArg = ($_GET['cid'] ?? '');
 
     // Parse cid list (comma-separated); trim empties.
     $cids = array_values(array_filter(array_map(
       'intval',
-      explode(',', $cidCsv)
+      explode(',', $cidQueryArg)
     )));
 
     // Filter to valid (existing + not deleted) contacts before counting.

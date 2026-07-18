@@ -275,6 +275,14 @@ class CRM_Nmregistry_Utils {
   }
 
   /**
+   * Test whether user has access to favorit/un-favorite features.
+   * @return bool
+   */
+  public static function userCanCompare() {
+    return CRM_Core_Permission::check('registry compare providers');
+  }
+
+  /**
    * Calculate a new URL, based on the current URL but with the given query parameters stripped.
    *
    * @param type $queryParametersToStrip

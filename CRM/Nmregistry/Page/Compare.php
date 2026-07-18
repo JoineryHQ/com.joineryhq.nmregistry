@@ -229,7 +229,6 @@ class CRM_Nmregistry_Page_Compare extends CRM_Core_Page {
    *
    * Valid contacts are:
    *   - not deleted
-   *   - not excluded by api permissions from the current user's view
    *   - a member of the group to which the profile is limited (if any)
    *
    * @param int[] $cids
@@ -253,6 +252,7 @@ class CRM_Nmregistry_Page_Compare extends CRM_Core_Page {
     }
     foreach ($cids as $cid) {
       $contact = \Civi\Api4\Contact::get()
+        ->setCheckPermissions(FALSE)
         ->addWhere('id', '=', $cid)
         ->addWhere('is_deleted', '=', 0);
       if ($groupId) {

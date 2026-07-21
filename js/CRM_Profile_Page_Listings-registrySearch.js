@@ -79,11 +79,6 @@ CRM.$(function($) {
     else {
       $('div.crm-title').append('<a class="crm-pager-link action-item crm-hover-button" href="/provider-search/?crmRowCount=18&registryFavorites=1">My Favorites</a>');
     }
-    $('div.crm-title').css({
-      'display': 'flex',
-      'align-items': 'center',
-      'justify-content': 'space-between'
-    });
   }
 
   // Define a listener for messages from child pages (iframes).

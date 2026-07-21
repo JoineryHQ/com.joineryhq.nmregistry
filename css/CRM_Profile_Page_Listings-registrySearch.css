@@ -19,10 +19,9 @@
 }
 
 .crm-container div.crm-search-results tbody tr {
-  position: relative;  /* Anchor for .nmregistry-compare-cell in CRM_Profile_Page_Listings-registrySearch-compare.css */
+  position: relative;
   width: calc(33% - 20px);
   padding: 20px;
-  /* padding-bottom: 3em;   Coupling: reserves space for the absolutely-positioned Compare cell at the bottom of the card (commit 17:07 UTC, jo#23). If the cell's measured height changes, this must change with it. */
 }
 
 .crm-container div.crm-search-results tbody td {
@@ -82,4 +81,10 @@
   .crm-container div.crm-search-results tbody tr {
     width: calc(100% - 20px);
   }
+}
+
+div.crm-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

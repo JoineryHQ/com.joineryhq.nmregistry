@@ -11,5 +11,7 @@
     <page_callback>CRM_Nmregistry_Page_Compare</page_callback>
     <title>Compare providers</title>
     <access_arguments>registry compare providers</access_arguments>
+    <is_public>TRUE</is_public>
+    <skipBreadcrumb>1</skipBreadcrumb>
   </item>
 </menu>

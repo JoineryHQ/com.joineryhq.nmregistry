@@ -88,3 +88,204 @@ div.crm-title {
   align-items: center;
   justify-content: space-between;
 }
+
+
+/*
+ * Compare-providers affordances for the registry listing page.
+ *
+ * Layered on top of CRM_Profile_Page_Listings-registrySearch.css which
+ * already converts the results table into a 3-column flexbox card grid.
+ *
+ * The card itself has
+ * NO decorative styling when selected. The checkbox state IS the feedback
+ * on the card. The sticky-bottom tray is the feedback on selection size.
+ *
+ * COLOR POLICY This stylesheet
+ * intentionally ships no brand palette. Colors, fills, hover tones, and
+ * text/icon color overrides belong to the theme layer and are out of
+ * scope for the affordance itself. What remains below is only the
+ * structural styling the affordance needs to function correctly:
+ *   - Layout / spacing / positioning for the checkbox and tray.
+ *   - Subtle borders + box-shadow on the tray so it reads as a floating
+ *     surface against the page below, using currentColor / neutral
+ *     grays so it inherits whatever the theme provides.
+ *   - Focus/disabled states inherit from the form control defaults; we
+ *     only add cursor + opacity adjustments for the disabled case.
+ */
+
+
+/* ---------- Per-row Compare cell ----------
+ *
+ * Layout-coupled: pinned to the bottom of each card (the parent <tr>).
+ * Depends on the parent row having position:relative.
+ * Without that, this cell would anchor to the nearest positioned ancestor
+ * (likely <html>) and shoot off the page.
+ */
+.crm-container div.crm-search-results tbody td.nmregistry-compare-cell {
+  /* Positioned absolute so it pins to the bottom of each card regardless
+     of row height. 
+     z-index:10 + pointer-events:auto so the Compare control receives clicks above
+     the View-cell overlay (which covers the rest of the card per its own style rules).
+  */
+  position: absolute;
+  z-index: 10;
+  pointer-events: auto;
+  width: 100%;
+  bottom: 0;
+  margin-top: 12px;
+  padding: 8px 0 4px 0;
+  left: 0;
+}
+
+td.nmregistry-compare-cell:hover {
+  background: #ddd; /* TODO: Colors belong to the theme layer. don't hard-code them here. */
+}
+
+.crm-container div.crm-search-results tbody td.nmregistry-compare-cell .nmregistry-compare-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.crm-container div.crm-search-results tbody td.nmregistry-compare-cell .nmregistry-compare-checkbox {
+  margin: 0;
+  cursor: pointer;
+  /* Native checkbox at default font size reads as small in this 14px label. */
+  transform: scale(1.1);
+  transform-origin: center;
+}
+
+.crm-container div.crm-search-results tbody td.nmregistry-compare-cell .crm-i {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.crm-container div.crm-search-results tbody td.nmregistry-compare-cell .nmregistry-compare-label-text {
+  /* "Compare" label after the icon. */
+  white-space: nowrap;
+}
+
+/* ---------- Sticky-bottom tray ----------
+ *
+ * Layout only: a fixed strip along the bottom with a thin neutral border
+ * top + small box-shadow so the tray reads as a floating surface above
+ * page content. The tray background is a literal white, presumably to be overridden
+ * by site theme styles.
+ *
+ * Text and icon color are NOT set here on purpose -- they inherit
+ * currentColor from the page.
+ */
+.nmregistry-compare-tray {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  transform: translateY(100%);
+  transition: transform 180ms ease-out;
+  pointer-events: none;
+  background: white;  /* TODO: Colors belong to the theme layer. don't hard-code them here. */
+}
+
+.nmregistry-compare-tray.is-visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.nmregistry-compare-tray-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nmregistry-compare-tray-entries {
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.nmregistry-compare-tray-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-size: 13px;
+  max-width: 220px;
+  /* Honor theme's text color but use a translucent fill of the same
+     color so the chip looks like a soft pill, not a hard block. */
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.nmregistry-compare-tray-entry-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+.nmregistry-compare-tray-entry-x {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 2px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nmregistry-compare-tray-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.nmregistry-compare-tray-count {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nmregistry-compare-tray .crm-pager-link.action-item.crm-hover-button {
+  /* Layout only: size, padding, font, rounded corners, inline-flex so
+     the icon and label sit on one line.*/
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.nmregistry-compare-tray .crm-pager-link.action-item.crm-hover-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.nmregistry-compare-tray .crm-pager-link.action-item.crm-hover-button .crm-i {
+  color: inherit;
+}

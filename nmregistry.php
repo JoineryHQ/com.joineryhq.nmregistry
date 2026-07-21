@@ -120,7 +120,6 @@ function nmregistry_civicrm_pageRun($page) {
       CRM_Core_Resources::singleton()->addStyleFile(E::LONG_NAME, 'css/CRM_Profile_Page_Listings-registrySearch.css');
       // Add JS and CSS for selection affordances for the compare-providers features.
       CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js//CRM_Nmregistry_Page_Compare.js', 110);
-      CRM_Core_Resources::singleton()->addStyleFile(E::LONG_NAME, 'css/CRM_Nmregistry_Page_Compare.css');
     }
   }
   if ($pageName == 'CRM_Profile_Page_View') {

@@ -41,7 +41,7 @@
 .crm-container div.crm-search-results tbody td:has(a.nmregistry-view-profile-link) a {
     height: 100%;
     display: block;
-    color: transparent;
+    color: transparent !important;
     background: transparent; 
     width: 100%;
     padding: 0;

@@ -122,8 +122,18 @@ class CRM_Nmregistry_Utils {
       ];
     }
 
-    // has not hidden their own listing (custom field "User preference: Disable my Listing?", editable in "Edit My Listing" form)
-    if ($contactGetSingle['custom_' . $disableMyListingCustomFieldId] != 'show') {
+    // Has not hidden their own listing (custom field "User preference: Disable my Listing?", editable in "Edit My Listing" form).
+    // Because this field is not necessarily required, it may be empty, so we specifically test
+    // whether it contains 'hide'.
+    $disableMyListingValues = $contactGetSingle['custom_' . $disableMyListingCustomFieldId];
+    if (
+      (
+        is_array($disableMyListingValues) && in_array('hide', $disableMyListingValues)
+      )
+      || (
+        $disableMyListingValues == 'hide'
+      )
+    ) {
       $statusChecks['HIDE_MY_LISTING'] = [
         'status' => 'warning',
         'message_thirdPerson' => E::ts('This listing is hidden by request of the provider.'),

@@ -279,11 +279,11 @@ function nmregistry_civicrm_alterTemplateFile($formName, &$form, $context, &$tpl
       $form->assign('isBackgroundCheckGood', (int)CRM_Nmregistry_Utils::isBackgroundCheckGood($cid));
       $form->assign('backgroundCheckInfoUrl', '/respite-provider-background-checks'); // TODO: GET THIS FROM A SETTING.
 
-      if (CRM_Core_Permission::check('registry contact providers')) {
+      if (CRM_Nmregistry_Utils::userCanContactProviders()) {
         $form->assign('contactProviderUrl', CRM_Nmregistry_Utils::getContactProviderUrl($cid));
       }
 
-      $form->assign('isAnonymous', (!CRM_Core_Session::getLoggedInContactID()));
+      $form->assign('contactProviderEnabled', (bool)\Civi::settings()->get('nmregistry_contact_provider_enabled'));
       $form->assign('loginUrl', '/account-login'); // TODO: GET THIS FROM A SETTING.
 
       $uid = CRM_Core_BAO_UFMatch::getUFId($cid);
@@ -575,7 +575,9 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
       array_splice($row, $avatarColumnOffset, 0, [$avatarColumnValue]);
 
       // Append row for compare affordances.
-      $row[] = CRM_Nmregistry_Utils_Markup::compareControl($cid, $contact['display_name']);
+      if (CRM_Nmregistry_Utils::userCanCompare()) {
+        $row[] = CRM_Nmregistry_Utils_Markup::compareControl($cid, $contact['display_name']);
+      }
       
       $headerNamesExcludedFromLabels = [
         'Name',
@@ -595,24 +597,30 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
 }
 
 function nmregistry_civicrm_permission(array &$newPermissions): void {
-  $newPermissions['registry contact providers'] = [
-    'label' => E::ts('Registry: contact providers'),
-    'description' => E::ts('Send a message to registry providers'),
-    'implies' => [],
-  ];
-  $newPermissions['registry view my provider messages'] = [
-    'label' => E::ts('Registry: view my provider messages'),
-    'description' => E::ts('View "contact a provider" messages sent to me'),
-    'implies' => [],
-  ];
-  $newPermissions['registry favorite providers'] = [
-    'label' => E::ts('Registry: favorite providers'),
-    'description' => E::ts('Favorite and un-favorite providers'),
-    'implies' => [],
-  ];
-  $newPermissions['registry compare providers'] = [
-    'label' => E::ts('Registry: compare providers'),
-    'description' => E::ts('Compare multiple providers in a single view'),
-    'implies' => [],
-  ];
+  if ((bool)\Civi::settings()->get('nmregistry_contact_provider_enabled')) {
+    $newPermissions['registry contact providers'] = [
+      'label' => E::ts('Registry: contact providers'),
+      'description' => E::ts('Send a message to registry providers'),
+      'implies' => [],
+    ];
+    $newPermissions['registry view my provider messages'] = [
+      'label' => E::ts('Registry: view my provider messages'),
+      'description' => E::ts('View "contact a provider" messages sent to me'),
+      'implies' => [],
+    ];
+  }
+  if ((bool)\Civi::settings()->get('nmregistry_favorites_enabled')) {
+    $newPermissions['registry favorite providers'] = [
+      'label' => E::ts('Registry: favorite providers'),
+      'description' => E::ts('Favorite and un-favorite providers'),
+      'implies' => [],
+    ];
+  }
+  if ((bool)\Civi::settings()->get('nmregistry_compare_enabled')) {
+    $newPermissions['registry compare providers'] = [
+      'label' => E::ts('Registry: compare providers'),
+      'description' => E::ts('Compare multiple providers in a single view'),
+      'implies' => [],
+    ];
+  }
 }

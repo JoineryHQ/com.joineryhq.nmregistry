@@ -10,7 +10,7 @@
     <path>civicrm/nmregistry/compare</path>
     <page_callback>CRM_Nmregistry_Page_Compare</page_callback>
     <title>Compare providers</title>
-    <access_arguments>registry compare providers</access_arguments>
+    <access_callback>CRM_Nmregistry_Utils::userCanCompare</access_callback>
     <is_public>TRUE</is_public>
     <skipBreadcrumb>1</skipBreadcrumb>
   </item>

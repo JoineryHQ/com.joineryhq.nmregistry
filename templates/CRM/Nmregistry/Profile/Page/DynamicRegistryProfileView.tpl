@@ -16,13 +16,15 @@
   {include file="CRM/Profile/Page/Dynamic.tpl"}
   
   
-  {if $contactProviderUrl}
-  <p>
-    <a class="crm-pager-link action-item crm-hover-button fancybox-iframe" href="{$contactProviderUrl}">{ts}Contact this provider{/ts}</a>
-  </p>
-  {elseif $isAnonymous}
-  <p>
-    <a class="crm-pager-link action-item crm-hover-button" target="_top" href="{$loginUrl}">{ts}Log in to contact this provider{/ts}</a>
-  </p>
+  {if $contactProviderEnabled}
+    {if $contactProviderUrl}
+      <p>
+        <a class="crm-pager-link action-item crm-hover-button fancybox-iframe" href="{$contactProviderUrl}">{ts}Contact this provider{/ts}</a>
+      </p>
+      {else}
+      <p>
+        <a class="crm-pager-link action-item crm-hover-button" target="_top" href="{$loginUrl}">{ts}Log in to contact this provider{/ts}</a>
+      </p>
+    {/if}
   {/if}
 </div>

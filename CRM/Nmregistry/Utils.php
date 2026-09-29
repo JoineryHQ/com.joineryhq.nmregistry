@@ -259,16 +259,45 @@ class CRM_Nmregistry_Utils {
    * Test whether user has access to favorit/un-favorite features.
    * @return bool
    */
-  public static function userCanFavorite() {
+  public static function userCanContactProviders() {
     static $cache;
     if (!isset($cache)) {
-      $cid = CRM_Core_Session::getLoggedInContactID();
-      if (!$cid) {
-        // Favoriting requires a logged-in user.
+      if (! (bool)\Civi::settings()->get('nmregistry_contact_provider_enabled')) {
         $cache = FALSE;
       }
       else {
-        $cache = CRM_Core_Permission::check('registry favorite providers');
+        $cid = CRM_Core_Session::getLoggedInContactID();
+        if (!$cid) {
+          // Favoriting requires a logged-in user.
+          $cache = FALSE;
+        }
+        else {
+          $cache = CRM_Core_Permission::check('registry contact providers');
+        }
+      }
+    }
+    return $cache;
+  }
+
+  /**
+   * Test whether user has access to favorit/un-favorite features.
+   * @return bool
+   */
+  public static function userCanFavorite() {
+    static $cache;
+    if (!isset($cache)) {
+      if (! (bool)\Civi::settings()->get('nmregistry_favorites_enabled')) {
+        $cache = FALSE;
+      }
+      else {
+        $cid = CRM_Core_Session::getLoggedInContactID();
+        if (!$cid) {
+          // Favoriting requires a logged-in user.
+          $cache = FALSE;
+        }
+        else {
+          $cache = CRM_Core_Permission::check('registry favorite providers');
+        }
       }
     }
     return $cache;
@@ -279,7 +308,16 @@ class CRM_Nmregistry_Utils {
    * @return bool
    */
   public static function userCanCompare() {
-    return CRM_Core_Permission::check('registry compare providers');
+    static $cache;
+    if (!isset($cache)) {
+      if (! (bool)\Civi::settings()->get('nmregistry_compare_enabled')) {
+        $cache = FALSE;
+      }
+      else {
+        $cache = CRM_Core_Permission::check('registry compare providers');
+      }
+    }
+    return $cache;
   }
 
   /**

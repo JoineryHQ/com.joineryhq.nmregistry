@@ -112,6 +112,11 @@ function nmregistry_civicrm_pageRun($page) {
       }
       // JS wants to know if user can favorite.
       $jsVars['userCanFavorite'] = CRM_Nmregistry_Utils::userCanFavorite();
+      $jsVars['userCanCompare'] = CRM_Nmregistry_Utils::userCanCompare();
+      $jsVars['compare_min_contacts'] = CRM_Nmregistry_Page_Compare::MIN_CONTACTS;
+      $jsVars['compare_max_contacts'] = CRM_Nmregistry_Page_Compare::MAX_CONTACTS;
+      $jsVars['compareTrayHtml'] = CRM_Nmregistry_Utils_Markup::compareTray();
+
       CRM_Core_Resources::singleton()->addVars('nmregistry', $jsVars);
 
       // Add js file for this page.
@@ -517,7 +522,15 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
       'field_name' => 'nrmregistry-avatar',
     ];
     array_splice($headers, $avatarColumnOffset, 0, [$avatarHeader]);
-
+    
+    // append a column header for compare affordances.
+    $compareHeader = [
+      'desc' => 'nrmregistryCompare',
+      'name' => 'Compare',
+      'field_name' => 'nrmregistry-compare',
+    ];
+    $headers[] = $compareHeader;
+    
     foreach ($rows as &$row) {
       // Analyze and maniputlate the View link ...
       $docActions = \phpQuery::newDocument($row[$actionsKey], 'text/html');
@@ -561,10 +574,16 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
       // Place the avatar in the row.
       array_splice($row, $avatarColumnOffset, 0, [$avatarColumnValue]);
 
+      // Append row for compare affordances.
+      $row[] = CRM_Nmregistry_Utils_Markup::compareControl($cid, $contact['display_name']);
+      
       $headerNamesExcludedFromLabels = [
         'Name',
-        'Photo'
+        'Photo',
+        'Compare',
       ];
+      
+      // Prepend header labels to each field value, since we won't be showing the header row.
       foreach ($headers as $headerKey => $header) {
         $headerName = ($header['name'] ?? '');
         if (!empty($headerName) && !in_array($headerName, $headerNamesExcludedFromLabels)) {

@@ -26,6 +26,9 @@ CRM.$(function($) {
   }
 
   // Remove ajax-driven click handlers in results pager.
+  // TODO: This is needed in order to preserve popup behavior (which gets broken
+  // under ajax paging), but it has the effect of requiring 'user strike enter'
+  // on civicrm "page N of M" pager controls; perhaps better to just hide those controls?
   var formSelector = ('form.' + CRM.vars.nmregistry.formClass || '#crm-main-content-wrapper');
   var $form = $(formSelector);
   $form.off('.crm-pager');
@@ -83,5 +86,5 @@ CRM.$(function($) {
 
   // Define a listener for messages from child pages (iframes).
   window.addEventListener('message', listenMessage);
-
+  
 });

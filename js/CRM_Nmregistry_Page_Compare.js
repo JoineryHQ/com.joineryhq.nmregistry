@@ -22,120 +22,30 @@
  */
 CRM.$(function($) {
 
-  var MIN_SELECTIONS = 2;
-  var MAX_SELECTIONS = 4;
+  var MIN_SELECTIONS = CRM.vars.nmregistry.compare_min_contacts;
+  var MAX_SELECTIONS = CRM.vars.nmregistry.compare_max_contacts;
   var COMPARE_ROUTE = '/civicrm/nmregistry/compare';
-
-  // ts() is provided by civicrm's translation shim. Wrap so we degrade
-  // gracefully if it isn't loaded yet (e.g. during early page execution).
-  var ts = (typeof window.ts === 'function') ? window.ts : function(s) { return s; };
 
   // ---------- Selection state (in-memory only) ----------
   // Stored as an ordered array of { cid, name }. Order matches check order,
   // not URL or sort order. The compare route sorts by sort_name on its own.
   var selection = [];
 
-  // ---------- DOM injection ----------
-  // Add a new <th> to the header row + a new <td> to each data row, both
-  // carrying the .nmregistry-compare-cell class. The new cell sits at
-  // cellIndex=6 (just before the existing View cell at cellIndex=7) so the
-  // existing CSS rule for `tbody td:last-child` still applies to the View
-  // overlay.
-  function injectCompareCells() {
-    var resultsTable = document.querySelector('.crm-search-results table');
-    if (!resultsTable) {
-      return false;
-    }
-
-    // Header: insert a new <th> at the end of each header row. The
-    // header row is hidden by CSS (display: none on tr.columnheader), so
-    // this is purely for semantic completeness.
-    var headerRow = resultsTable.querySelector('thead tr') || resultsTable.querySelector('tr.columnheader');
-    if (headerRow && !headerRow.querySelector('.nmregistry-compare-cell')) {
-      var th = document.createElement('th');
-      th.className = 'nmregistry-compare-cell';
-      th.scope = 'col';
-      th.textContent = ts('Compare');
-      headerRow.appendChild(th);
-    }
-
-    // Data rows: one new <td> per row, before the View cell.
-    var rows = resultsTable.querySelectorAll('tbody tr');
-    rows.forEach(function(row) {
-      if (row.classList.contains('columnheader')) {
-        // Skip the hidden header row that some templates put inside tbody.
-        return;
-      }
-      if (row.querySelector('td.nmregistry-compare-cell')) {
-        // Already injected.
-        return;
-      }
-      // Find the row's contact id by walking the favorite icon's data attr.
-      // This is the same source the existing favorites JS uses, so the two
-      // features stay in sync.
-      var fav = row.querySelector('.nmregistry-favorite[data-provider-cid]');
-      if (!fav) {
-        return;
-      }
-      var cid = parseInt(fav.getAttribute('data-provider-cid'), 10);
-      if (!cid) {
-        return;
-      }
-      // The provider name lives in the crm-sort_name cell (cellIndex=1).
-      // We pull its text content (the favorite <i> has no text, so this is
-      // just the display name).
-      var nameCell = row.querySelector('.crm-sort_name') || row.cells[1];
-      var name = nameCell ? nameCell.textContent.trim() : '';
-
-      var td = document.createElement('td');
-      td.className = 'nmregistry-compare-cell';
-      td.setAttribute('data-cid', String(cid));
-      td.setAttribute('data-name', name);
-
-      // Build the labeled control. <label> wraps the checkbox + icon + text
-      // so the click target is the whole label, not just the small box.
-      var label = document.createElement('label');
-      label.className = 'nmregistry-compare-label';
-
-      var checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'nmregistry-compare-checkbox';
-      checkbox.setAttribute('data-cid', String(cid));
-      checkbox.setAttribute('data-name', name);
-      checkbox.setAttribute('aria-label', ts('Add to comparison'));
-
-      var icon = document.createElement('i');
-      // Optional: define className empty to avoid placing an icon at all.
-      icon.className = ''; // e.g. 'crm-i fa-balance-scale'
-      icon.setAttribute('aria-hidden', 'true');
-
-      var labelText = document.createElement('span');
-      labelText.className = 'nmregistry-compare-label-text';
-      labelText.textContent = ts('Compare');
-
-      label.appendChild(checkbox);
-      if (icon.className.length) {
-        // Only if i has a classname, append it. (If no classname, it won't display
-        // an icon anyway.)
-        label.appendChild(icon);
-      }
-      label.appendChild(labelText);
-      td.appendChild(label);
-
-      // insert the compare-cell td.
-      row.appendChild(td);
-      
-      // Per css, compare-cell td is position-absolute, so its parent won't make
+  function adjustLayout() {
+    $('td.crm-nrmregistry-compare').each(function(idx, el) {      
+      td = $(el);
+      tr = td.closest('tr')
+      // Per css, compare td is position-absolute, so its parent won't make
       // room for it, therefore it's likely to overlay the boundary box, or at
       // least to be cramped. Calculate its height and increase parent padding-bottom
       // accordingly.
-      var tdHeight = td.getBoundingClientRect().height;
-      var originalPaddingBottom = $(row).css('padding-bottom');
-      var newPaddingBottom = 'calc(' + originalPaddingBottom + ' + ' + tdHeight + 'px)';
+      var tdHeight =  td[0].getBoundingClientRect().height;
       var newPaddingBottom = tdHeight + 'px';
-      $(row).css({'padding-bottom': newPaddingBottom});
-      console.log($(row).css('padding-bottom'), newPaddingBottom);
+      tr.css({'padding-bottom': newPaddingBottom});
       
+      // data.'crmInitialValue' is used to check if the form is dirty, but we
+      // don't want that for these checkboxes.
+      td.find('input[type="checkbox"]').removeData('crmInitialValue');
     });
 
     return true;
@@ -143,101 +53,74 @@ CRM.$(function($) {
 
   // ---------- Sticky-bottom tray ----------
   function buildTray() {
-    var tray = document.createElement('div');
-    tray.className = 'nmregistry-compare-tray';
-    tray.setAttribute('role', 'region');
-    tray.setAttribute('aria-label', ts('Comparison selection'));
-    tray.setAttribute('aria-hidden', 'true');
-
-    tray.innerHTML = ''
-      + '<div class="nmregistry-compare-tray-inner">'
-      + '  <div class="nmregistry-compare-tray-entries" aria-live="polite"></div>'
-      + '  <div class="nmregistry-compare-tray-actions">'
-      + '    <span class="nmregistry-compare-tray-count" aria-live="polite"></span>'
-      + '    <button type="button" class="crm-pager-link action-item crm-hover-button nmregistry-compare-clear">'
-      + ts('Clear') + '</button>'
-      + '    <button type="button" class="crm-pager-link action-item crm-hover-button nmregistry-compare-go">'
-      + ts('Compare') + '</button>'
-      + '  </div>'
-      + '</div>';
-
-    document.body.appendChild(tray);
-    return tray;
+    $('body').append(CRM.vars.nmregistry.compareTrayHtml);
   }
 
   // ---------- Rendering ----------
   // Re-renders the tray from the current selection array. Called on every
   // checkbox change. Keeps the DOM in lock-step with selection[].
   function render() {
-    var tray = document.querySelector('.nmregistry-compare-tray');
-    if (!tray) {
+    var tray = $('div.nmregistry-compare-tray');
+    if (!tray.length) {
       return;
     }
     var count = selection.length;
 
+    var trayEntries = tray.find('.nmregistry-compare-tray-entries');
+    console.log('trayEntries', trayEntries);
     if (count === 0) {
-      tray.setAttribute('aria-hidden', 'true');
-      tray.classList.remove('is-visible');
+      tray.attr('aria-hidden', 'true');
+      tray.removeClass('is-visible');
       // Clear any stale entry chips so the DOM doesn't accumulate ghost
       // children between selections.
-      var emptyEntriesEl = tray.querySelector('.nmregistry-compare-tray-entries');
-      if (emptyEntriesEl) {
-        emptyEntriesEl.innerHTML = '';
+      if (!trayEntries.length) {
+        trayEntries.empty();
       }
       return;
     }
 
-    tray.setAttribute('aria-hidden', 'false');
-    tray.classList.add('is-visible');
+    tray.attr('aria-hidden', 'false');
+    tray.addClass('is-visible');
 
     // Entries: one chip per selected provider, with X to remove.
-    var entriesEl = tray.querySelector('.nmregistry-compare-tray-entries');
-    entriesEl.innerHTML = '';
+    trayEntries.empty();
     selection.forEach(function(entry) {
-      var chip = document.createElement('span');
-      chip.className = 'nmregistry-compare-tray-entry';
-      chip.setAttribute('data-cid', String(entry.cid));
+      var chip = $('<span class="nmregistry-compare-tray-entry"></span>').appendTo(trayEntries);
+      chip.attr('data-cid', String(entry.cid));
 
-      var name = document.createElement('span');
-      name.className = 'nmregistry-compare-tray-entry-name';
-      name.textContent = entry.name || ('#' + entry.cid);
+      var name = $('<span class="nmregistry-compare-tray-entry-name"></span>').appendTo(chip);
+      name.html(entry.name || ('#' + entry.cid));
 
-      var remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'nmregistry-compare-tray-entry-x';
-      remove.setAttribute('data-cid', String(entry.cid));
-      remove.setAttribute('aria-label', ts('Remove %1 from comparison', { 1: entry.name || ('#' + entry.cid) }));
-      remove.textContent = '\u00d7'; // multiplication sign ×, matches fa-x glyph
-
-      chip.appendChild(name);
-      chip.appendChild(remove);
-      entriesEl.appendChild(chip);
+      var remove = $('<button class="nmregistry-compare-tray-entry-x"></button>').appendTo(chip);
+      remove.attr('data-cid', String(entry.cid));
+      remove.attr('aria-label', ts('Remove %1 from comparison', { 1: entry.name || ('#' + entry.cid) }));
+      remove.html('\u00d7'); // multiplication sign ×, matches fa-x glyph
     });
 
+
     // Count + Compare button label + enabled/disabled state.
-    var countEl = tray.querySelector('.nmregistry-compare-tray-count');
-    var goBtn = tray.querySelector('.nmregistry-compare-go');
+    var countEl = tray.find('.nmregistry-compare-tray-count');
+    console.log('countEl', countEl);
+    var goBtn = tray.find('.nmregistry-compare-go');
 
     if (count >= MAX_SELECTIONS) {
-      countEl.textContent = ts('Maximum %1 selected — deselect one to choose a different provider', { 1: MAX_SELECTIONS });
+      countEl.html(ts('Maximum %1 selected — deselect one to choose a different provider', { 1: MAX_SELECTIONS }));
     } else {
-      countEl.textContent = ts('%1 of %2–%3 providers selected', {
+      countEl.html(ts('%1 of %2–%3 providers selected', {
         1: count,
         2: MIN_SELECTIONS,
         3: MAX_SELECTIONS,
-      });
+      }));
     }
 
     // Pluralize "Compare N provider(s)".
-    var labelText = '';
-    // Prepend an icon to the label.
-    // labelText = '<i class="crm-i fa-balance-scale" aria-hidden="true"></i> '
-    var labelText = labelText + ts('Compare %1 providers', { 1: count });
-    
-    // The button label is "Compare" + count text. Keep the icon visible too.
-    goBtn.innerHTML = labelText;
+    // The button label is "Compare" + count text
+    goBtn.html(ts('Compare %1 %2', {
+      1: count,
+      2: (count > 1 ? 'providers' : 'provider')
+    }));
 
-    goBtn.disabled = (count < MIN_SELECTIONS);
+    goBtn.attr('disabled', (count < MIN_SELECTIONS));
   }
 
   // ---------- State mutators ----------
@@ -276,13 +159,13 @@ CRM.$(function($) {
 
   // ---------- Event wiring ----------
   function wireEvents() {
-    var resultsTable = document.querySelector('.crm-search-results table');
-    if (!resultsTable) {
+    var resultsTable = $('.crm-search-results table');
+    if (!resultsTable.length) {
       return;
     }
 
     // Checkbox change (delegated, so re-renders don't have to re-bind).
-    resultsTable.addEventListener('change', function(e) {
+    resultsTable.on('change', function(e) {
       var checkbox = e.target.closest('.nmregistry-compare-checkbox');
       if (!checkbox) {
         return;
@@ -311,7 +194,7 @@ CRM.$(function($) {
     // checkbox's default toggle, which is why the click appeared to do
     // nothing in early testing.) The View overlay <a> lives in a different
     // cell, so it does not receive this click event regardless.
-    resultsTable.addEventListener('click', function(e) {
+    resultsTable.on('click', function(e) {
       var lbl = e.target.closest('.nmregistry-compare-label');
       if (lbl) {
         e.stopPropagation();
@@ -319,9 +202,9 @@ CRM.$(function($) {
     });
 
     // Tray actions (delegated on the tray itself).
-    var tray = document.querySelector('.nmregistry-compare-tray');
+    var tray = $('.nmregistry-compare-tray');
     if (tray) {
-      tray.addEventListener('click', function(e) {
+      tray.on('click', function(e) {
         // Per-entry X: remove one.
         var xBtn = e.target.closest('.nmregistry-compare-tray-entry-x');
         if (xBtn) {
@@ -329,9 +212,9 @@ CRM.$(function($) {
           var cid = parseInt(xBtn.getAttribute('data-cid'), 10);
           removeFromSelection(cid);
           // Sync the checkbox in the row.
-          var cb = resultsTable.querySelector('.nmregistry-compare-checkbox[data-cid="' + cid + '"]');
-          if (cb) {
-            cb.checked = false;
+          var cb = resultsTable.find('.nmregistry-compare-checkbox[data-cid="' + cid + '"]');
+          if (cb.length) {
+            cb.attr('checked', false);
           }
           render();
           return;
@@ -342,8 +225,8 @@ CRM.$(function($) {
           e.preventDefault();
           selection = [];
           // Uncheck all boxes in the table.
-          resultsTable.querySelectorAll('.nmregistry-compare-checkbox').forEach(function(cb) {
-            cb.checked = false;
+          resultsTable.find('.nmregistry-compare-checkbox').each(function(idx, el) {
+            $(el).attr('checked', false);
           });
           render();
           return;
@@ -368,10 +251,8 @@ CRM.$(function($) {
   // criteria submit), so we re-run injection on DOM mutations under the
   // results container. Cheap because injectCompareCells is idempotent.
   function bootstrap() {
-    if (!injectCompareCells()) {
-      return;
-    }
-    if (!document.querySelector('.nmregistry-compare-tray')) {
+    adjustLayout();
+    if (!$('.nmregistry-compare-tray').length) {
       buildTray();
     }
     wireEvents();
@@ -383,15 +264,15 @@ CRM.$(function($) {
   // Watch for ajax re-renders of the search results (e.g. paging, sorting,
   // search submit) and re-bootstrap. The existing JS file in this directory
   // also relies on the results container, so we share its selector.
-  var resultsContainer = document.querySelector('.crm-search-results');
-  if (resultsContainer && typeof MutationObserver !== 'undefined') {
+  var resultsContainer = $('.crm-search-results');
+  if (resultsContainer.length && typeof MutationObserver !== 'undefined') {
     var observer = new MutationObserver(function() {
       // Debounce: only act if our cells are missing.
-      if (!document.querySelector('.nmregistry-compare-cell')) {
+      if (!$('.nmregistry-compare').length) {
         bootstrap();
       }
     });
-    observer.observe(resultsContainer, { childList: true, subtree: true });
+    observer.observe(resultsContainer[0], { childList: true, subtree: true });
   }
 
 });

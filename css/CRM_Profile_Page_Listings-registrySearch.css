@@ -130,12 +130,10 @@ div.crm-title {
  */
 .crm-container div.crm-search-results tbody td.crm-nmregistry-compare {
   /* Positioned absolute so it pins to the bottom of each card regardless
-     of row height. 
-     z-index:10 + pointer-events:auto so the Compare control receives clicks above
-     the View-cell overlay (which covers the rest of the card per its own style rules).
+     of row height; this also stacks it higher on the Z axis without needing a
+     z-index.
   */
   position: absolute;
-  z-index: 10;
   pointer-events: auto;
   width: 100%;
   bottom: 0;

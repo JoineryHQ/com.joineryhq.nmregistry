@@ -71,6 +71,7 @@ CRM.$(function($) {
   $('div.crm-search-results > table > tbody > tr th:nth-child(1)').remove();
   $('div.crm-search-results > table > tbody > tr td:nth-child(1)').remove();
 
+  // Expose 'favorites' if that feature is enabled.
   if (CRM.vars.nmregistry.userCanFavorite) {
     // If user can favorite/un-favorite:
     // Add a button to toggle between 'My Favorites' and full registry.
@@ -83,6 +84,15 @@ CRM.$(function($) {
       $('div.crm-title').append('<a class="crm-pager-link action-item crm-hover-button" href="/provider-search/?crmRowCount=18&registryFavorites=1">My Favorites</a>');
     }
   }
+  
+  // Modify 'Edit Search Criteria' to something more obvious
+  // (many people haven't even searched yet.)
+  $('form.CRM_Profile_Form_Search div.crm-form-block summary').each(function(idx, el){
+    var jqEl = $(el);
+    if(jqEl.html().trim() == ts('Edit Search Criteria')) {
+      jqEl.html('Filter listings ...');
+    }
+  });
 
   // Define a listener for messages from child pages (iframes).
   window.addEventListener('message', listenMessage);

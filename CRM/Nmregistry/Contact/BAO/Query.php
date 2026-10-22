@@ -31,19 +31,6 @@ class CRM_Nmregistry_Contact_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       return;
     }
     
-    // Also, only if this query is attempting to limit to group 2 (which is what
-    // the registry profile does).
-    $paramTestParts = [];
-    $paramTestParts[] = ($query->_params[0][0] ?? '');
-    $paramTestParts[] = ($query->_params[0][1] ?? '');
-    if (is_array($query->_params[0][2])) {
-      $paramTestParts[] = implode(',', ($query->_params[0][2] ?? []));
-    }
-    $paramTestString = implode(' ', $paramTestParts);
-    if ($paramTestString != "group IN 2") {
-      return;
-    }
-    
     // If we're still here, we'll limit to "my favorites" only.
     // Define a subquery we can insert into the WHERE clauses.
     $subQuerySql = "

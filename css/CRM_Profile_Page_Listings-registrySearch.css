@@ -66,6 +66,13 @@
   padding-bottom: .5em;
   line-height: 1.2;
 }
+
+.crm-container div.crm-search-results tbody i.nmregistry-favorite {
+  position: absolute;
+  top: 274px;
+  left: calc(50% + 71px);
+}
+
 .crm-container div.crm-search-results tbody td label {
   font-weight: 600;
 }

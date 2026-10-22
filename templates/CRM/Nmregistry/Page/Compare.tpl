@@ -34,7 +34,10 @@
                 <div class="nmregistry-compare-avatar">{$col.avatar}</div>
                 <div class="nmregistry-compare-name">{$col.display_name}</div>
                 <div class="nmregistry-compare-actions">
-                  <a class="crm-pager-link action-item crm-hover-button nmregistry-compare-view" href="{crmURL p="civicrm/profile/view" q="reset=1&id=`$col.cid`&gid=`$profileId`"}" title="{ts}View this provider's profile{/ts}"><i class="crm-i fa-expand" role="img" aria-hidden="true"></i> {ts}View{/ts}</a>
+                  <a class="crm-pager-link action-item crm-hover-button nmregistry-compare-view fancybox-iframe"
+                     href="{crmURL p="civicrm/profile/view" q="reset=1&id=`$col.cid`&gid=`$profileId`&lightbox=1&lightbox-nolink=1"}"
+                     title="{ts}View this provider's profile{/ts}"
+                  ><i class="crm-i fa-expand" role="img" aria-hidden="true"></i> {ts}View{/ts}</a>
                   {if $showRemove}
                     <a class="crm-pager-link action-item crm-hover-button nmregistry-compare-remove" href="#" data-cid="{$col.cid}" title="{ts 1=$col.display_name}Remove %1 from this comparison{/ts}"><i class="crm-i fa-x" role="img" aria-hidden="true"></i> {ts}Remove{/ts}</a>
                   {/if}

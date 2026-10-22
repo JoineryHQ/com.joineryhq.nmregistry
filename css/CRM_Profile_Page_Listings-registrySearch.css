@@ -52,10 +52,10 @@
 }
 
 
-.crm-container div.crm-search-results tbody td.crm-nrmregistry-avatar {
+.crm-container div.crm-search-results tbody td.crm-nmregistry-avatar {
   height: 275px;
 }
-.crm-container div.crm-search-results tbody td.crm-nrmregistry-avatar img {
+.crm-container div.crm-search-results tbody td.crm-nmregistry-avatar img {
   max-height: 240px;
   width: auto;
   /*border-radius: 20px;*/
@@ -121,7 +121,7 @@ div.crm-title {
  * Without that, this cell would anchor to the nearest positioned ancestor
  * (likely <html>) and shoot off the page.
  */
-.crm-container div.crm-search-results tbody td.crm-nrmregistry-compare {
+.crm-container div.crm-search-results tbody td.crm-nmregistry-compare {
   /* Positioned absolute so it pins to the bottom of each card regardless
      of row height. 
      z-index:10 + pointer-events:auto so the Compare control receives clicks above
@@ -137,11 +137,11 @@ div.crm-title {
   left: 0;
 }
 
-td.crm-nrmregistry-compare:hover {
+td.crm-nmregistry-compare:hover {
   background: #ddd; /* TODO: Colors belong to the theme layer. don't hard-code them here. */
 }
 
-.crm-container div.crm-search-results tbody td.crm-nrmregistry-compare .nmregistry-compare-label {
+.crm-container div.crm-search-results tbody td.crm-nmregistry-compare .nmregistry-compare-label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -153,7 +153,7 @@ td.crm-nrmregistry-compare:hover {
   user-select: none;
 }
 
-.crm-container div.crm-search-results tbody td.crm-nrmregistry-compare .nmregistry-compare-checkbox {
+.crm-container div.crm-search-results tbody td.crm-nmregistry-compare .nmregistry-compare-checkbox {
   margin: 0;
   cursor: pointer;
   /* Native checkbox at default font size reads as small in this 14px label. */
@@ -161,12 +161,12 @@ td.crm-nrmregistry-compare:hover {
   transform-origin: center;
 }
 
-.crm-container div.crm-search-results tbody td.crm-nrmregistry-compare .crm-i {
+.crm-container div.crm-search-results tbody td.crm-nmregistry-compare .crm-i {
   font-size: 14px;
   line-height: 1;
 }
 
-.crm-container div.crm-search-results tbody td.crm-nrmregistry-compare .nmregistry-compare-label-text {
+.crm-container div.crm-search-results tbody td.crm-nmregistry-compare .nmregistry-compare-label-text {
   /* "Compare" label after the icon. */
   white-space: nowrap;
 }

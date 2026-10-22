@@ -32,7 +32,7 @@ CRM.$(function($) {
   var selection = [];
 
   function adjustLayout() {
-    $('td.crm-nrmregistry-compare').each(function(idx, el) {      
+    $('td.crm-nmregistry-compare').each(function(idx, el) {      
       td = $(el);
       tr = td.closest('tr')
       // Per css, compare td is position-absolute, so its parent won't make

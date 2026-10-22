@@ -517,17 +517,17 @@ function nmregistry_civicrm_searchColumns( $objectName, &$headers,  &$rows, &$se
     // Insert a column header for the avatar.
     $avatarColumnOffset = 1;
     $avatarHeader = [
-      'desc' => 'nrmregistryAvatar',
+      'desc' => 'nmregistryAvatar',
       'name' => 'Photo',
-      'field_name' => 'nrmregistry-avatar',
+      'field_name' => 'nmregistry-avatar',
     ];
     array_splice($headers, $avatarColumnOffset, 0, [$avatarHeader]);
     
     // append a column header for compare affordances.
     $compareHeader = [
-      'desc' => 'nrmregistryCompare',
+      'desc' => 'nmregistryCompare',
       'name' => 'Compare',
-      'field_name' => 'nrmregistry-compare',
+      'field_name' => 'nmregistry-compare',
     ];
     $headers[] = $compareHeader;
     
